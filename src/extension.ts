@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
+
 import { PaizaPanel } from "./PaizaPanel";
+
 
 /**
  * Activate the extension
