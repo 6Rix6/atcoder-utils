@@ -4,7 +4,7 @@
   "description": "Compile and Run code on Paiza.io",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
@@ -15,7 +15,14 @@
     "commands": [
       {
         "command": "paiza-runner.run",
-        "title": "Compile and Run (Paiza)"
+        "title": "Paiza Runner: Run Code"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "paiza-runner.run",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
       }
     ]
   },
