@@ -1,26 +1,70 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+const api_key = "guest";
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "paiza-runner" is now active!');
+/**
+ * @param {vscode.ExtensionContext} context
+ */
+function activate(context: vscode.ExtensionContext) {
+  let disposable = vscode.commands.registerCommand(
+    "paiza-runner.run",
+    async function () {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No active editor found!");
+        return;
+      }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('paiza-runner.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from paiza-runner!');
-	});
+      // Get the source code from the active editor
+      const sourceCode = editor.document.getText();
+      const languageId = editor.document.languageId === "cpp" ? "cpp" : "c"; // Simplified language mapping
 
-	context.subscriptions.push(disposable);
+      vscode.window.showInformationMessage("Running on Paiza...");
+
+      try {
+        // 1. Create runner
+        const createRes = await fetch(
+          "https://api.paiza.io/runners/create.json",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              source_code: sourceCode,
+              language: languageId,
+              api_key,
+            }),
+          }
+        );
+        const { id } = (await createRes.json()) as { id: string };
+
+        // 2. Poll for results (Wait 3 seconds for simplicity)
+        // Ideally, you should check 'status' repeatedly, but this is a quick version.
+        setTimeout(async () => {
+          const detailRes = await fetch(
+            `https://api.paiza.io/runners/get_details.json?id=${id}&api_key=${api_key}`
+          );
+          const result = (await detailRes.json()) as any;
+
+          // Show output in a new OutputChannel
+          const channel = vscode.window.createOutputChannel("Paiza Output");
+          channel.show();
+
+          if (result.stdout) channel.appendLine("[Stdout]\n" + result.stdout);
+          if (result.stderr) channel.appendLine("[Stderr]\n" + result.stderr);
+          if (result.build_stderr)
+            channel.appendLine("[Build Error]\n" + result.build_stderr);
+        }, 3000);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          vscode.window.showErrorMessage("Error: " + err.message);
+        }
+      }
+    }
+  );
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function deactivate() {}
+
+export { activate, deactivate };

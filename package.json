@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "paiza-runner.helloWorld",
-        "title": "Hello World"
+        "command": "paiza-runner.run",
+        "title": "Compile and Run (Paiza)"
       }
     ]
   },
