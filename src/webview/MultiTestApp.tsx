@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { DetailsResponse, SUPPORTED_LANGUAGES } from "../paizaApi";
+import { DetailsResponse, SUPPORTED_LANGUAGES } from "../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "./components";
+import { SampleInput } from "../lib/scrapeAtCoder";
 
 const vscode = (window as any).acquireVsCodeApi();
 
@@ -89,6 +90,10 @@ const MultiTestApp = () => {
         case "setTargetFile":
           setTargetFileUri(message.uri);
           break;
+
+        case "addTestCases":
+          addTestCasesFromAtCoder(message.testCases as SampleInput[]);
+          break;
       }
     };
 
@@ -149,6 +154,22 @@ const MultiTestApp = () => {
     setNextId(nextId + 1);
   };
 
+  const addTestCasesFromAtCoder = (cases: SampleInput[]) => {
+    if (cases.length === 0) return;
+    const newCases: TestCase[] = [];
+    for (let i = 0; i < cases.length; i++) {
+      const tc = cases[i];
+      newCases.push({
+        id: nextId + i,
+        input: tc.input,
+        expectedOutput: tc.output,
+      });
+    }
+    setTestCases(newCases);
+    setResults([]);
+    setNextId(nextId + cases.length);
+  };
+
   const removeTestCase = (id: number) => {
     if (testCases.length > 1) {
       setTestCases(testCases.filter((tc) => tc.id !== id));
@@ -163,6 +184,14 @@ const MultiTestApp = () => {
     setTestCases(
       testCases.map((tc) => (tc.id === id ? { ...tc, [field]: value } : tc))
     );
+  };
+
+  const handleAddTestCasesFromAtCoder = () => {
+    if (vscode) {
+      vscode.postMessage({
+        command: "addTestCasesFromAtCoder",
+      });
+    }
   };
 
   const formatBytes = (bytes: number) => {
@@ -234,9 +263,14 @@ const MultiTestApp = () => {
       <div className="test-cases-section">
         <div className="test-cases-header">
           <h2>Test Cases</h2>
-          <Button onClick={addTestCase} className="add-btn">
-            + Add Test Case
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={addTestCase} className="add-btn">
+              Add Test Case
+            </Button>
+            <Button onClick={handleAddTestCasesFromAtCoder}>
+              From AtCoder
+            </Button>
+          </div>
         </div>
 
         {testCases.map((testCase, index) => (

@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { runAndWait, detectLanguage, DetailsResponse } from "./paizaApi";
+import { runAndWait, detectLanguage, DetailsResponse } from "../lib/paizaApi";
+import { getWebviewContent } from "../utils/utils";
+import scrapeAtCoder from "../lib/scrapeAtCoder";
 
 /**
  * Test case result for parallel execution
@@ -26,9 +28,10 @@ export class MultiTestPanel {
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
-    this._panel.webview.html = this._getWebviewContent(
+    this._panel.webview.html = getWebviewContent(
       this._panel.webview,
-      extensionUri
+      extensionUri,
+      ["dist", "multiTestWebview.js"]
     );
 
     // Handle messages from webview
@@ -59,6 +62,10 @@ export class MultiTestPanel {
                 this._setTargetDocument(document);
               }
             }
+            break;
+
+          case "addTestCasesFromAtCoder":
+            await this._addTestCasesFromAtCoder();
             break;
         }
       },
@@ -253,47 +260,33 @@ export class MultiTestPanel {
     }
   }
 
-  private _getUri(
-    webview: vscode.Webview,
-    extensionUri: vscode.Uri,
-    pathList: string[]
-  ) {
-    return webview.asWebviewUri(
-      vscode.Uri.file(path.join(extensionUri.fsPath, ...pathList))
-    );
-  }
+  private async _addTestCasesFromAtCoder() {
+    const result = await vscode.window.showInputBox({
+      placeHolder: "https://atcoder.jp/contests/.../tasks/...",
+      prompt: "Enter AtCoder contest task URL",
+      password: false,
+    });
 
-  private _getNonce() {
-    let text = "";
-    const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 32; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    if (!result) {
+      return;
     }
-    return text;
-  }
 
-  private _getWebviewContent(
-    webview: vscode.Webview,
-    extensionUri: vscode.Uri
-  ) {
-    const webviewUri = this._getUri(webview, extensionUri, [
-      "dist",
-      "multiTestWebview.js",
-    ]);
-    const nonce = this._getNonce();
+    try {
+      const problems = await scrapeAtCoder(result);
+      if (!problems) {
+        return;
+      }
 
-    return `<!DOCTYPE html>
-                  <html lang="en">
-                  <head>
-                      <meta charset="UTF-8">
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                      <title>Paiza Multi-Test Runner</title>
-                  </head>
-                  <body>
-                      <div id="app"></div>
-                      <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-                  </body>
-              </html>`;
+      // TODO: switch language by user setting
+
+      this._panel.webview.postMessage({
+        command: "addTestCases",
+        testCases: problems.problemJp.samples,
+      });
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   }
 }

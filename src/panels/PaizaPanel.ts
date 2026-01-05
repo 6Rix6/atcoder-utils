@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { runAndWait, detectLanguage } from "./paizaApi";
+import { runAndWait, detectLanguage } from "../lib/paizaApi";
 
 /**
  * WebView Panel for Paiza Runner

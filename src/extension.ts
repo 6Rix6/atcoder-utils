@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { PaizaPanel } from "./PaizaPanel";
-import { MultiTestPanel } from "./MultiTestPanel";
+import { PaizaPanel } from "./panels/PaizaPanel";
+import { MultiTestPanel } from "./panels/MultiTestPanel";
 
 /**
  * Activate the extension

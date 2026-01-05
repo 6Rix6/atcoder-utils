@@ -236,7 +236,7 @@ textarea {
   color: var(--text-primary);
 }
 
-.add-btn {
+/* .add-btn {
   background: var(--bg-tertiary);
   border: 1px dashed var(--border);
   color: var(--text-secondary);
@@ -247,7 +247,7 @@ textarea {
 .add-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
-}
+} */
 
 .test-case-card {
   background: var(--bg-secondary);
