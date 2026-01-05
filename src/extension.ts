@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { PaizaPanel } from "./PaizaPanel";
+import { MultiTestPanel } from "./MultiTestPanel";
 
 /**
  * Activate the extension
@@ -15,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (editor) {
         lastActiveEditor = editor;
         PaizaPanel.updateTargetDocument(editor.document);
+        MultiTestPanel.updateTargetDocument(editor.document);
       }
     }
   );
@@ -41,7 +43,36 @@ export function activate(context: vscode.ExtensionContext) {
     PaizaPanel.createOrShow(context.extensionUri, document);
   });
 
-  context.subscriptions.push(editorChangeListener, runCommand);
+  // Register the run multiple test cases command
+  const runMultipleCommand = vscode.commands.registerCommand(
+    "paiza-runner.runMultiple",
+    () => {
+      const editor = lastActiveEditor || vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage(
+          "Paiza Runner: No active editor found. Please open a file first."
+        );
+        return;
+      }
+
+      const document = editor.document;
+      if (!document.getText().trim()) {
+        vscode.window.showWarningMessage(
+          "Paiza Runner: The current file is empty."
+        );
+        return;
+      }
+
+      // Open the Multi-Test WebView panel with document reference
+      MultiTestPanel.createOrShow(context.extensionUri, document);
+    }
+  );
+
+  context.subscriptions.push(
+    editorChangeListener,
+    runCommand,
+    runMultipleCommand
+  );
 }
 
 export function deactivate() {}

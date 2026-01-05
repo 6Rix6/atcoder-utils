@@ -20,6 +20,10 @@
       {
         "command": "paiza-runner.run",
         "title": "Paiza Runner: Run Code"
+      },
+      {
+        "command": "paiza-runner.runMultiple",
+        "title": "Paiza Runner: Run Multiple Test Cases"
       }
     ],
     "keybindings": [
@@ -27,6 +31,11 @@
         "command": "paiza-runner.run",
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p"
+      },
+      {
+        "command": "paiza-runner.runMultiple",
+        "key": "ctrl+alt+shift+p",
+        "mac": "cmd+alt+shift+p"
       }
     ]
   },

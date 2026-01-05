@@ -74,4 +74,18 @@ const webviewConfig = {
   },
 };
 
-module.exports = [extensionConfig, webviewConfig];
+/** @type WebpackConfig */
+const multiTestWebviewConfig = {
+  ...baseConfig,
+  target: ["web", "es2020"],
+  entry: "./src/webview/multiTestIndex.tsx",
+  experiments: { outputModule: true },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "multiTestWebview.js",
+    libraryTarget: "module",
+    chunkFormat: "module",
+  },
+};
+
+module.exports = [extensionConfig, webviewConfig, multiTestWebviewConfig];
