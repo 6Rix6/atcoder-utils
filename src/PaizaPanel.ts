@@ -14,7 +14,10 @@ export class PaizaPanel {
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
+    this._panel.webview.html = this._getWebviewContent(
+      this._panel.webview,
+      extensionUri
+    );
 
     // Handle messages from webview
     this._panel.webview.onDidReceiveMessage(
@@ -23,10 +26,26 @@ export class PaizaPanel {
           case "run":
             await this._runCode(message.language, message.input);
             break;
-          
+
           case "getCurrentLanguage":
-            if(this._targetDocument){
-                this._setTargetDocument(this._targetDocument);
+            if (this._targetDocument) {
+              this._setTargetDocument(this._targetDocument);
+            }
+            break;
+
+          case "getOpenEditors":
+            this._sendOpenEditors();
+            break;
+
+          case "setTargetFile":
+            const uri = message.uri;
+            if (uri) {
+              const document = vscode.workspace.textDocuments.find(
+                (doc) => doc.uri.toString() === uri
+              );
+              if (document) {
+                this._setTargetDocument(document);
+              }
             }
             break;
         }
@@ -74,6 +93,7 @@ export class PaizaPanel {
   public static updateTargetDocument(document: vscode.TextDocument) {
     if (PaizaPanel.currentPanel) {
       PaizaPanel.currentPanel._setTargetDocument(document);
+      PaizaPanel.currentPanel._sendOpenEditors();
     }
   }
 
@@ -98,6 +118,29 @@ export class PaizaPanel {
         language: detectedLanguage,
       });
     }
+    // Send target file info
+    this._panel.webview.postMessage({
+      command: "setTargetFile",
+      uri: document.uri.toString(),
+      fileName: path.basename(document.fileName),
+    });
+  }
+
+  private _sendOpenEditors() {
+    // Get all visible text editors
+    const openEditors = vscode.workspace.textDocuments
+      .filter((doc) => !doc.isUntitled && doc.uri.scheme === "file")
+      .map((doc) => ({
+        uri: doc.uri.toString(),
+        fileName: path.basename(doc.fileName),
+        fullPath: doc.fileName,
+      }));
+
+    this._panel.webview.postMessage({
+      command: "openEditors",
+      editors: openEditors,
+      currentUri: this._targetDocument?.uri.toString(),
+    });
   }
 
   private async _runCode(language: string, input: string) {
@@ -138,7 +181,7 @@ export class PaizaPanel {
       this._panel.webview.postMessage({ command: "loading", loading: false });
     }
   }
-  
+
   private _getUri(
     webview: vscode.Webview,
     extensionUri: vscode.Uri,
@@ -159,8 +202,14 @@ export class PaizaPanel {
     return text;
   }
 
-  private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-    const webviewUri = this._getUri(webview, extensionUri, ["dist", "webview.js"]);
+  private _getWebviewContent(
+    webview: vscode.Webview,
+    extensionUri: vscode.Uri
+  ) {
+    const webviewUri = this._getUri(webview, extensionUri, [
+      "dist",
+      "webview.js",
+    ]);
     const nonce = this._getNonce();
 
     return `<!DOCTYPE html>

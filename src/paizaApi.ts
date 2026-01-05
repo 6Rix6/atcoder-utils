@@ -121,7 +121,9 @@ const VSCODE_TO_PAIZA_MAP: Record<string, LanguageId> = {
  * Detect Paiza language from VS Code languageId
  * Returns undefined if no mapping found
  */
-export function detectLanguage(vscodeLanguageId: string): LanguageId | undefined {
+export function detectLanguage(
+  vscodeLanguageId: string
+): LanguageId | undefined {
   return VSCODE_TO_PAIZA_MAP[vscodeLanguageId];
 }
 
@@ -164,7 +166,9 @@ export async function createRunner(
  */
 export async function getStatus(id: string): Promise<StatusResponse> {
   const response = await fetch(
-    `${API_BASE}/runners/get_status.json?api_key=${API_KEY}&id=${encodeURIComponent(id)}`
+    `${API_BASE}/runners/get_status.json?api_key=${API_KEY}&id=${encodeURIComponent(
+      id
+    )}`
   );
 
   if (!response.ok) {
@@ -179,7 +183,9 @@ export async function getStatus(id: string): Promise<StatusResponse> {
  */
 export async function getDetails(id: string): Promise<DetailsResponse> {
   const response = await fetch(
-    `${API_BASE}/runners/get_details.json?api_key=${API_KEY}&id=${encodeURIComponent(id)}`
+    `${API_BASE}/runners/get_details.json?api_key=${API_KEY}&id=${encodeURIComponent(
+      id
+    )}`
   );
 
   if (!response.ok) {

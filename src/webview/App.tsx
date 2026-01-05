@@ -1,14 +1,23 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { DetailsResponse,SUPPORTED_LANGUAGES } from '../paizaApi';
+import React, { useState, useEffect } from "react";
+import { DetailsResponse, SUPPORTED_LANGUAGES } from "../paizaApi";
+import { Button, Dropdown, DropdownOption } from "./components";
 
 const vscode = (window as any).acquireVsCodeApi();
 
+interface OpenEditor {
+  uri: string;
+  fileName: string;
+  fullPath: string;
+}
+
 const App = () => {
-  const [language, setLanguage] = useState('');
-  const [stdin, setStdin] = useState('');
+  const [language, setLanguage] = useState("");
+  const [stdin, setStdin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DetailsResponse | null>(null);
+  const [openEditors, setOpenEditors] = useState<OpenEditor[]>([]);
+  const [targetFileUri, setTargetFileUri] = useState<string>("");
 
   useEffect(() => {
     // Handle messages from the extension host
@@ -16,38 +25,50 @@ const App = () => {
       const message = event.data;
 
       switch (message.command) {
-        case 'loading':
+        case "loading":
           setIsLoading(message.loading);
           if (message.loading) setError(null);
           break;
 
-        case 'result':
+        case "result":
           setResult(message.result);
           setError(null);
           break;
 
-        case 'error':
+        case "error":
           setError(message.error);
           setResult(null);
           break;
 
-        case 'setLanguage':
+        case "setLanguage":
           setLanguage(message.language);
+          break;
+
+        case "openEditors":
+          setOpenEditors(message.editors);
+          if (message.currentUri) {
+            setTargetFileUri(message.currentUri);
+          }
+          break;
+
+        case "setTargetFile":
+          setTargetFileUri(message.uri);
           break;
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
     getCurrentLanguage();
+    getOpenEditors();
 
-    return () => window.removeEventListener('message', handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   const handleRun = () => {
     if (vscode) {
       vscode.postMessage({
-        command: 'run',
+        command: "run",
         language,
         input: stdin,
       });
@@ -57,8 +78,31 @@ const App = () => {
   const getCurrentLanguage = () => {
     if (vscode) {
       vscode.postMessage({
-        command: 'getCurrentLanguage',
+        command: "getCurrentLanguage",
       });
+    }
+  };
+
+  const getOpenEditors = () => {
+    if (vscode) {
+      vscode.postMessage({
+        command: "getOpenEditors",
+      });
+    }
+  };
+
+  const handleTargetFileChange = (
+    value: string | DropdownOption | undefined
+  ) => {
+    if (value && typeof value !== "string") {
+      const uri = value.value;
+      setTargetFileUri(uri);
+      if (vscode) {
+        vscode.postMessage({
+          command: "setTargetFile",
+          uri,
+        });
+      }
     }
   };
 
@@ -72,19 +116,34 @@ const App = () => {
     <div className="container">
       <h1>Paiza Runner</h1>
 
-      <div className="form-group">
-        <label htmlFor="language">Language</label>
-        <select
-          id="language"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        >
-          {SUPPORTED_LANGUAGES.map((lang) => (
-            <option key={lang.id} value={lang.id}>
-              {lang.label}
-            </option>
-          ))}
-        </select>
+      <div className="w-full flex gap-4">
+        <div className="form-group">
+          <label htmlFor="target-file-dropdown">Target File</label>
+          <Dropdown
+            value={targetFileUri}
+            className="w-full"
+            onChange={handleTargetFileChange}
+            options={openEditors.map((editor) => ({
+              value: editor.uri,
+              label: editor.fileName,
+            }))}
+            placeholder="Select a file..."
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="language-dropdown">Language</label>
+          <Dropdown
+            value={language}
+            id="language-dropdown"
+            className="w-full"
+            onChange={(value) => setLanguage((value as DropdownOption)!.value)}
+            options={SUPPORTED_LANGUAGES.map((lang) => ({
+              value: lang.id,
+              label: lang.label,
+            }))}
+          />
+        </div>
       </div>
 
       <div className="form-group">
@@ -97,15 +156,9 @@ const App = () => {
         />
       </div>
 
-      <button
-        id="runBtn"
-        className="btn"
-        disabled={isLoading}
-        onClick={handleRun}
-      >
-        <span className="btn-icon">▶</span>
+      <Button disabled={isLoading} onClick={handleRun}>
         Run Code
-      </button>
+      </Button>
 
       {/* Loading Spinner */}
       {isLoading && (
@@ -124,7 +177,7 @@ const App = () => {
           <div className="result-header">
             <span className="result-title">Execution Result</span>
             <span className="result-stats">
-              Time: {(result.time * 1000).toFixed(0)}ms | Memory:{' '}
+              Time: {(result.time * 1000).toFixed(0)}ms | Memory:{" "}
               {formatBytes(result.memory)}
             </span>
           </div>
@@ -149,7 +202,7 @@ const App = () => {
           )}
 
           {/* Build Error */}
-          {result.build_stderr && result.build_result !== 'success' && (
+          {result.build_stderr && result.build_result !== "success" && (
             <div className="result-box">
               <div className="result-box-header build-error">Build Error</div>
               <div className="result-content">{result.build_stderr}</div>

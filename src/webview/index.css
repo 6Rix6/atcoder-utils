@@ -39,6 +39,7 @@ h1::before {
 
 .form-group {
   margin-bottom: 16px;
+  width: 100%;
 }
 
 label {
@@ -71,7 +72,7 @@ textarea {
   resize: vertical;
 }
 
-/* Button */
+/* Button
 .btn {
   background: var(--accent);
   color: white;
@@ -85,9 +86,9 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
+} */
 
-.btn:hover:not(:disabled) {
+/* .btn:hover:not(:disabled) {
   background: var(--accent-hover);
 }
 
@@ -98,7 +99,7 @@ textarea {
 
 .btn-icon {
   font-size: 1.1em;
-}
+} */
 
 /* Result Section */
 .result-section {
