@@ -88,4 +88,23 @@ const multiTestWebviewConfig = {
   },
 };
 
-module.exports = [extensionConfig, webviewConfig, multiTestWebviewConfig];
+/** @type WebpackConfig */
+const atCoderProblemWebviewConfig = {
+  ...baseConfig,
+  target: ["web", "es2020"],
+  entry: "./src/webview/atCoderProblemIndex.tsx",
+  experiments: { outputModule: true },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "atCoderProblemWebview.js",
+    libraryTarget: "module",
+    chunkFormat: "module",
+  },
+};
+
+module.exports = [
+  extensionConfig,
+  webviewConfig,
+  multiTestWebviewConfig,
+  atCoderProblemWebviewConfig,
+];

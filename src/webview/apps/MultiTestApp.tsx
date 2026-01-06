@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { SUPPORTED_LANGUAGES } from "@/lib/paizaApi";
+import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "../components";
-import { SampleInput } from "@/lib/scrapeAtCoder";
-import { TestCaseResult } from "@/panels/MultiTestPanel";
-import type { OpenEditor } from "@/types/OpenEditor";
+import { SampleInput } from "../../lib/scrapeAtCoder";
+import { TestCaseResult } from "../../panels/MultiTestPanel";
+import type { OpenEditor } from "../../types/OpenEditor";
 
 const vscode = (window as any).acquireVsCodeApi();
 

@@ -24,6 +24,10 @@
       {
         "command": "paiza-runner.runMultiple",
         "title": "Paiza Runner: Run Multiple Test Cases"
+      },
+      {
+        "command": "paiza-runner.runAtCoderProblem",
+        "title": "Paiza Runner: Run AtCoder Problem"
       }
     ],
     "keybindings": [

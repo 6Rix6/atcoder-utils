@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { detectLanguage } from "@/lib/paizaApi";
-import { getWebviewContent } from "@/utils/utils";
-import { OpenEditor } from "@/types/OpenEditor";
+import { detectLanguage } from "../lib/paizaApi";
+import { getWebviewContent } from "../utils/utils";
+import { OpenEditor } from "../types/OpenEditor";
 
 /**
  * Configuration for creating a panel

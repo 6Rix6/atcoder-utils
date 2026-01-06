@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { DetailsResponse, SUPPORTED_LANGUAGES } from "@/lib/paizaApi";
+import { DetailsResponse, SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "../components";
-import type { OpenEditor } from "@/types/OpenEditor";
+import type { OpenEditor } from "../../types/OpenEditor";
 
 const vscode = (window as any).acquireVsCodeApi();
 
