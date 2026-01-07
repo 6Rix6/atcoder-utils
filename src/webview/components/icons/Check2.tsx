@@ -1,7 +1,7 @@
 import React from "react";
 import { IconProps } from "../../types/IconProps";
 
-export const Play = ({
+export const Check2 = ({
   className,
   width = 16,
   height = 16,
@@ -14,11 +14,11 @@ export const Play = ({
       width={width}
       height={height}
       fill={fill}
-      className={`bi bi-play-fill ${className}`}
+      className={`bi bi-check2 ${className}`}
       viewBox="0 0 16 16"
       {...props}
     >
-      <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
+      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0" />
     </svg>
   );
 };

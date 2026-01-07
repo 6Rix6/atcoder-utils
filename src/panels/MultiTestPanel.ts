@@ -185,16 +185,14 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
     }
 
     try {
-      const problems = await scrapeAtCoder(result);
-      if (!problems) {
+      const problem = await scrapeAtCoder(result);
+      if (!problem) {
         return;
       }
 
-      // TODO: switch language by user setting
-
       this._postMessage({
         command: "addTestCases",
-        testCases: problems.problemJp.samples,
+        testCases: problem.samples,
       });
     } catch (error) {
       vscode.window.showErrorMessage(

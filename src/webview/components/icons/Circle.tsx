@@ -1,7 +1,7 @@
 import React from "react";
 import { IconProps } from "../../types/IconProps";
 
-export const Play = ({
+export const Circle = ({
   className,
   width = 16,
   height = 16,
@@ -14,11 +14,11 @@ export const Play = ({
       width={width}
       height={height}
       fill={fill}
-      className={`bi bi-play-fill ${className}`}
+      className={`bi bi-circle ${className}`}
       viewBox="0 0 16 16"
       {...props}
     >
-      <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
     </svg>
   );
 };

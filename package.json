@@ -41,7 +41,21 @@
         "key": "ctrl+alt+shift+p",
         "mac": "cmd+alt+shift+p"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Paiza Runner",
+      "properties": {
+        "paiza-runner.atCoderLanguage": {
+          "type": "string",
+          "default": "English",
+          "enum": [
+            "English",
+            "Japanese"
+          ],
+          "description": "The language used to display AtCoder problems"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

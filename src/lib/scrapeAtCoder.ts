@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { Element as DomElement } from "domhandler";
+import { getSettingValue } from "../utils/getSettingValue";
 
 export interface SampleInput {
   input: string;
@@ -8,7 +9,7 @@ export interface SampleInput {
 }
 
 export interface AtCoderProblem {
-  language: "english" | "japanese";
+  language: "English" | "Japanese";
   id: string;
   url: string;
   title: string;
@@ -19,43 +20,39 @@ export interface AtCoderProblem {
 
 export async function scrapeAtCoder(
   url: string
-  // TODO: switch language by user setting
-  // language: "japanese" | "english"
-): Promise<{ problemEn: AtCoderProblem; problemJp: AtCoderProblem } | null> {
+): Promise<AtCoderProblem | null> {
   try {
-    const id = url.split("/").pop()?.split("?").shift() ?? "";
+    const setting = getSettingValue<"English" | "Japanese">("atCoderLanguage");
+    const language = setting ?? "English";
 
-    const html = await fetchHTML(url);
+    const langCode = getLanguageCode(language);
+    const targetUrl = updateLangParam(url, langCode);
+
+    const html = await fetchHTML(targetUrl);
     const $ = cheerio.load(html);
 
+    const id = url.split("/").pop()?.split("?").shift() ?? "";
     const container = $("#main-container").first();
     const title = container.find("span.h2").contents().first().text().trim();
     const executeConstraints = container.find("p").first().text().trim();
 
-    const bodyEn = container.find("span.lang-en").first();
-    const bodyJp = container.find("span.lang-ja").first();
+    const body = container.find(`span.lang-${langCode}`).first();
 
-    const problemEn: AtCoderProblem = {
-      language: "english",
+    if (!title || !executeConstraints || !body) {
+      throw new Error(`Failed to parse problem page.`);
+    }
+
+    const problem: AtCoderProblem = {
+      language,
       id,
       url,
       title,
       executeConstraints,
-      bodyHtml: bodyEn.html()?.trim() ?? "",
-      samples: parseSamples($, bodyEn),
+      bodyHtml: body.html()?.trim() ?? "",
+      samples: parseSamples($, body),
     };
 
-    const problemJp: AtCoderProblem = {
-      language: "japanese",
-      id,
-      url,
-      title,
-      executeConstraints,
-      bodyHtml: bodyJp.html()?.trim() ?? "",
-      samples: parseSamples($, bodyJp),
-    };
-
-    return { problemEn, problemJp };
+    return problem;
   } catch (error) {
     throw error;
   }
@@ -103,3 +100,16 @@ function parseSamples(
 
   return samples;
 }
+
+const getLanguageCode = (language: "English" | "Japanese") => {
+  return language === "Japanese" ? "ja" : "en";
+};
+
+const updateLangParam = (url: string, langCode: string) => {
+  const urlObj = new URL(url);
+
+  // Set or update the 'lang' parameter
+  urlObj.searchParams.set("lang", langCode);
+
+  return urlObj.toString();
+};

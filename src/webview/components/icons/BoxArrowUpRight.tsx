@@ -1,14 +1,22 @@
 import React from "react";
+import { IconProps } from "../../types/IconProps";
 
-export const BoxArrowUpRight = () => {
+export const BoxArrowUpRight = ({
+  className,
+  width = 16,
+  height = 16,
+  fill = "currentColor",
+  ...props
+}: IconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="currentColor"
-      className="bi bi-box-arrow-up-right"
+      width={width}
+      height={height}
+      fill={fill}
+      className={`bi bi-box-arrow-up-right ${className}`}
       viewBox="0 0 16 16"
+      {...props}
     >
       <path
         fill-rule="evenodd"

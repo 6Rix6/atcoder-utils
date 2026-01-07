@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { BasePanel, PanelConfig } from "./BasePanel";
 import { scrapeAtCoder } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
+import { runAndWait } from "../lib/paizaApi";
+import { TestCaseResult } from "./MultiTestPanel";
 
 const PANEL_CONFIG: PanelConfig = {
   viewType: "atCoderProblem",
@@ -50,18 +52,17 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     }
 
     try {
-      const problems = await scrapeAtCoder(result);
-      if (!problems) {
+      const problem = await scrapeAtCoder(result);
+      if (!problem) {
         return;
       }
 
-      // TODO: switch language by user setting
       const panel = BasePanel._createPanel(PANEL_CONFIG);
-      panel.title = problems.problemJp.id;
+      panel.title = problem.id;
       AtCoderProblemPanel.currentPanel = new AtCoderProblemPanel(
         panel,
         extensionUri,
-        problems.problemJp
+        problem
       );
 
       AtCoderProblemPanel.currentPanel._setTargetDocument(document);
@@ -103,6 +104,97 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
       case "openLink":
         vscode.env.openExternal(vscode.Uri.parse(message.url));
         break;
+
+      case "runAll":
+        await this._runAllTestCases(message.language);
+        break;
+    }
+  }
+
+  /**
+   * Run all test cases from problem samples in parallel
+   */
+  private async _runAllTestCases(language: string) {
+    const problem = AtCoderProblemPanel._problem;
+    if (!problem || !problem.samples || problem.samples.length === 0) {
+      this._postMessage({
+        command: "error",
+        error: "No test cases available",
+      });
+      return;
+    }
+
+    const sourceCode = this._getSourceCode();
+    if (!sourceCode) {
+      return;
+    }
+
+    // Show loading state
+    this._postMessage({ command: "loading", loading: true });
+
+    try {
+      // Create promises for all test cases
+      const promises = problem.samples.map(async (sample, index) => {
+        // Notify that this test case is running
+        this._postMessage({
+          command: "testCaseStatus",
+          index,
+          status: "running",
+        });
+
+        try {
+          const result = await runAndWait(sourceCode, language, sample.input);
+
+          // Check if output matches expected
+          let verdict: "AC" | "WA" | "RE" | "CE" | null = null;
+          const expectedOutput = sample.output.trim();
+          if (expectedOutput !== "") {
+            const actualOutput = result.stdout.trim();
+            if (result.result === "success") {
+              verdict = actualOutput === expectedOutput ? "AC" : "WA";
+            } else if (result.build_result === "failure") {
+              verdict = "CE";
+            } else {
+              verdict = "RE";
+            }
+          }
+
+          return {
+            index,
+            input: sample.input,
+            expectedOutput: sample.output,
+            result,
+            status: "completed" as const,
+            verdict,
+          };
+        } catch (error) {
+          return {
+            index,
+            input: sample.input,
+            expectedOutput: sample.output,
+            result: null,
+            error: error instanceof Error ? error.message : String(error),
+            status: "error" as const,
+            verdict: null,
+          };
+        }
+      });
+
+      // Wait for all test cases to complete
+      const results = await Promise.all(promises);
+
+      // Send all results
+      this._postMessage({
+        command: "allResults",
+        results,
+      });
+    } catch (error) {
+      this._postMessage({
+        command: "error",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      this._postMessage({ command: "loading", loading: false });
     }
   }
 }
