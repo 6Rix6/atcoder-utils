@@ -6,13 +6,14 @@ import { runAndWait } from "../lib/paizaApi";
 
 const PANEL_CONFIG: PanelConfig = {
   viewType: "atCoderProblem",
-  title: "Loading...",
+  title: "",
   webviewJsPath: ["dist", "atCoderProblemWebview.js"],
 };
 
 export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
   public static currentPanel: AtCoderProblemPanel | undefined;
-  private static _problem: AtCoderProblem | null = null;
+  private static _panels: Map<string, AtCoderProblemPanel> = new Map();
+  private _problem: AtCoderProblem;
 
   private constructor(
     panel: vscode.WebviewPanel,
@@ -20,11 +21,15 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     problem: AtCoderProblem
   ) {
     super(panel, extensionUri, PANEL_CONFIG);
-    AtCoderProblemPanel._problem = problem;
+    this._problem = problem;
+    AtCoderProblemPanel._panels.set(problem.id, this);
   }
 
   protected _clearCurrentPanel(): void {
-    AtCoderProblemPanel.currentPanel = undefined;
+    AtCoderProblemPanel._panels.delete(this._problem.id);
+    if (AtCoderProblemPanel.currentPanel === this) {
+      AtCoderProblemPanel.currentPanel = undefined;
+    }
   }
 
   /**
@@ -36,6 +41,15 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
   ) {
     const problem = await requireTask();
     if (!problem) {
+      return;
+    }
+
+    // Check if a panel for this problem already exists
+    const existingPanel = AtCoderProblemPanel._panels.get(problem.id);
+    if (existingPanel) {
+      existingPanel._panel.reveal(vscode.ViewColumn.Beside);
+      existingPanel._setTargetDocument(document);
+      AtCoderProblemPanel.currentPanel = existingPanel;
       return;
     }
 
@@ -54,9 +68,10 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
    * Update the target document (called when user switches editors)
    */
   public static updateTargetDocument(document: vscode.TextDocument) {
-    if (AtCoderProblemPanel.currentPanel) {
-      AtCoderProblemPanel.currentPanel._setTargetDocument(document);
-      AtCoderProblemPanel.currentPanel._sendOpenEditors();
+    // Update all open panels
+    for (const panel of AtCoderProblemPanel._panels.values()) {
+      panel._setTargetDocument(document);
+      panel._sendOpenEditors();
     }
   }
 
@@ -74,7 +89,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
       case "getProblem":
         this._postMessage({
           command: "setProblem",
-          problem: AtCoderProblemPanel._problem,
+          problem: this._problem,
         });
         break;
 
@@ -92,8 +107,8 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
    * Run all test cases from problem samples in parallel
    */
   private async _runAllTestCases(language: string) {
-    const problem = AtCoderProblemPanel._problem;
-    if (!problem || !problem.samples || problem.samples.length === 0) {
+    const problem = this._problem;
+    if (!problem.samples || problem.samples.length === 0) {
       this._postMessage({
         command: "error",
         error: "No test cases available",
