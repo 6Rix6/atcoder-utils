@@ -1,7 +1,7 @@
 {
-  "name": "paiza-runner",
-  "displayName": "Paiza Runner",
-  "description": "Compile and Run code on Paiza.io",
+  "name": "atcoder-utils",
+  "displayName": "AtCoder Utils",
+  "description": "Helpful utilities for competitive programming on AtCoder",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -18,34 +18,34 @@
   "contributes": {
     "commands": [
       {
-        "command": "paiza-runner.run",
-        "title": "Paiza Runner: Run Code"
+        "command": "atcoder-utils.run",
+        "title": "AtCoder Utils: Run Code"
       },
       {
-        "command": "paiza-runner.runMultiple",
-        "title": "Paiza Runner: Run Multiple Test Cases"
+        "command": "atcoder-utils.runMultiple",
+        "title": "AtCoder Utils: Run Multiple Test Cases"
       },
       {
-        "command": "paiza-runner.runAtCoderProblem",
-        "title": "Paiza Runner: Run AtCoder Problem"
+        "command": "atcoder-utils.runAtCoderProblem",
+        "title": "AtCoder Utils: Run AtCoder Problem"
       }
     ],
     "keybindings": [
       {
-        "command": "paiza-runner.run",
+        "command": "atcoder-utils.run",
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p"
       },
       {
-        "command": "paiza-runner.runMultiple",
+        "command": "atcoder-utils.runMultiple",
         "key": "ctrl+alt+shift+p",
         "mac": "cmd+alt+shift+p"
       }
     ],
     "configuration": {
-      "title": "Paiza Runner",
+      "title": "AtCoder Utils",
       "properties": {
-        "paiza-runner.atCoderLanguage": {
+        "atcoder-utils.atCoderLanguage": {
           "type": "string",
           "default": "English",
           "enum": [

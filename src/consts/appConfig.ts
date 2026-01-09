@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
-  appName: "paiza-runner",
-  appDisplayName: "Paiza Runner",
+  appName: "atcoder-utils",
+  appDisplayName: "AtCoder Utils",
 } as const;
 
 export const COMMANDS = {
