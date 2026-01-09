@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { BasePanel, PanelConfig } from "./BasePanel";
-import { scrapeAtCoder } from "../lib/scrapeAtCoder";
+import { requireTask, scrapeAtCoder } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
 import { runAndWait } from "../lib/paizaApi";
 
@@ -34,42 +34,20 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     extensionUri: vscode.Uri,
     document: vscode.TextDocument
   ) {
-    if (AtCoderProblemPanel.currentPanel) {
-      AtCoderProblemPanel.currentPanel._setTargetDocument(document);
-      AtCoderProblemPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
+    const problem = await requireTask();
+    if (!problem) {
       return;
     }
 
-    const result = await vscode.window.showInputBox({
-      placeHolder: "https://atcoder.jp/contests/.../tasks/...",
-      prompt: "Enter AtCoder contest task URL",
-      password: false,
-    });
+    const panel = BasePanel._createPanel(PANEL_CONFIG);
+    panel.title = problem.id;
+    AtCoderProblemPanel.currentPanel = new AtCoderProblemPanel(
+      panel,
+      extensionUri,
+      problem
+    );
 
-    if (!result) {
-      return;
-    }
-
-    try {
-      const problem = await scrapeAtCoder(result);
-      if (!problem) {
-        return;
-      }
-
-      const panel = BasePanel._createPanel(PANEL_CONFIG);
-      panel.title = problem.id;
-      AtCoderProblemPanel.currentPanel = new AtCoderProblemPanel(
-        panel,
-        extensionUri,
-        problem
-      );
-
-      AtCoderProblemPanel.currentPanel._setTargetDocument(document);
-    } catch (error) {
-      vscode.window.showErrorMessage(
-        error instanceof Error ? error.message : String(error)
-      );
-    }
+    AtCoderProblemPanel.currentPanel._setTargetDocument(document);
   }
 
   /**

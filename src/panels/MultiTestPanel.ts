@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { runAndWait, DetailsResponse } from "../lib/paizaApi";
-import { scrapeAtCoder } from "../lib/scrapeAtCoder";
+import { requireTask, scrapeAtCoder } from "../lib/scrapeAtCoder";
 import { BasePanel, PanelConfig } from "./BasePanel";
 
 /**
@@ -174,30 +174,14 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
    * Add test cases from AtCoder problem page
    */
   private async _addTestCasesFromAtCoder() {
-    const result = await vscode.window.showInputBox({
-      placeHolder: "https://atcoder.jp/contests/.../tasks/...",
-      prompt: "Enter AtCoder contest task URL",
-      password: false,
-    });
-
-    if (!result) {
+    const problem = await requireTask();
+    if (!problem) {
       return;
     }
 
-    try {
-      const problem = await scrapeAtCoder(result);
-      if (!problem) {
-        return;
-      }
-
-      this._postMessage({
-        command: "addTestCases",
-        testCases: problem.samples,
-      });
-    } catch (error) {
-      vscode.window.showErrorMessage(
-        error instanceof Error ? error.message : String(error)
-      );
-    }
+    this._postMessage({
+      command: "addTestCases",
+      testCases: problem.samples,
+    });
   }
 }

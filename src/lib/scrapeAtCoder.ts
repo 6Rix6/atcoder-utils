@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { Element as DomElement } from "domhandler";
@@ -19,9 +20,9 @@ export interface AtCoderProblem {
   samples: SampleInput[];
 }
 
-export async function scrapeAtCoder(
+export const scrapeAtCoder = async (
   url: string
-): Promise<AtCoderProblem | null> {
+): Promise<AtCoderProblem | null> => {
   try {
     const setting = getSettingValue<"English" | "Japanese">(
       SETTINGS.atCoderLanguage
@@ -59,9 +60,9 @@ export async function scrapeAtCoder(
   } catch (error) {
     throw error;
   }
-}
+};
 
-async function fetchHTML(url: string) {
+const fetchHTML = async (url: string) => {
   try {
     const { data: html } = await axios.get(url);
     return html;
@@ -69,12 +70,12 @@ async function fetchHTML(url: string) {
     console.error(`Error fetching HTML from ${url}:`, error);
     throw error;
   }
-}
+};
 
-function parseSamples(
+const parseSamples = (
   $: cheerio.CheerioAPI,
   element: cheerio.Cheerio<DomElement>
-): SampleInput[] {
+): SampleInput[] => {
   const samples: SampleInput[] = [];
 
   const sampleSections = element.find(".part").filter((i, el) => {
@@ -102,7 +103,7 @@ function parseSamples(
   }
 
   return samples;
-}
+};
 
 const getLanguageCode = (language: "English" | "Japanese") => {
   return language === "Japanese" ? "ja" : "en";
@@ -115,4 +116,49 @@ const updateLangParam = (url: string, langCode: string) => {
   urlObj.searchParams.set("lang", langCode);
 
   return urlObj.toString();
+};
+
+export const requireTask = async (): Promise<AtCoderProblem | null> => {
+  const result = await vscode.window.showInputBox({
+    placeHolder: "https://atcoder.jp/contests/.../tasks/...",
+    prompt: "Enter AtCoder contest task id or URL",
+    password: false,
+  });
+
+  if (!result) {
+    return null;
+  }
+
+  const url = generateAtCoderUrl(result);
+
+  if (!url) {
+    vscode.window.showErrorMessage("Invalid AtCoder task id");
+    return null;
+  }
+
+  try {
+    const problem = await scrapeAtCoder(url);
+    return problem;
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      error instanceof Error ? error.message : String(error)
+    );
+    return null;
+  }
+};
+
+const generateAtCoderUrl = (id: string): string | null => {
+  const match = id.match(/([a-z0-9]+(?:_[a-z0-9]+)*)$/);
+
+  if (!match) return null;
+
+  const taskId = match[1];
+
+  const parts = taskId.split("_");
+  const contestId = parts.slice(0, -1).join("_") || parts[0];
+
+  return `https://atcoder.jp/contests/${contestId.replace(
+    /_/g,
+    "-"
+  )}/tasks/${taskId}`;
 };
