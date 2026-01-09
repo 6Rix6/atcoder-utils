@@ -3,13 +3,13 @@ import { runAndWait } from "../lib/paizaApi";
 import { BasePanel, PanelConfig } from "./BasePanel";
 
 const PANEL_CONFIG: PanelConfig = {
-  viewType: "paizaRunner",
-  title: "Paiza Runner",
+  viewType: "singleCodeRunner",
+  title: "Code Runner",
   webviewJsPath: ["dist", "webview.js"],
 };
 
 /**
- * WebView Panel for Paiza Runner
+ * WebView Panel for Code Runner
  * Provides GUI for language selection and stdin input
  */
 export class SingleRunPanel extends BasePanel<SingleRunPanel> {

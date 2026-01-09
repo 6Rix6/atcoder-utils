@@ -109,7 +109,7 @@ const App = () => {
 
   return (
     <div className="container">
-      <h1>Paiza Runner</h1>
+      <h1>Code Runner</h1>
 
       <div className="w-full flex gap-4">
         <div className="form-group">
