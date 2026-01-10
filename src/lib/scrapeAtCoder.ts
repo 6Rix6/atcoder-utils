@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import { Element as DomElement } from "domhandler";
 import { getSettingValue } from "../utils/getSettingValue";
 import { SETTINGS } from "../consts/appConfig";
+import { loadCookie } from "../utils/cookieStore";
 
 export interface SampleInput {
   input: string;
@@ -165,7 +166,15 @@ const sleep = (time: number) =>
 
 const fetchHTML = async (url: string) => {
   try {
-    const { data: html } = await axios.get(url);
+    const cookie = await loadCookie(false);
+    const headers = cookie
+      ? {
+          Cookie: `REVEL_SESSION=${cookie};`,
+        }
+      : undefined;
+    const { data: html } = await axios.get(url, {
+      headers,
+    });
     return html;
   } catch (error) {
     console.error(`Error fetching HTML from ${url}:`, error);

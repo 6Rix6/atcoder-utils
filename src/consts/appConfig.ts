@@ -8,6 +8,7 @@ export const COMMANDS = {
   runMultiple: `${APP_CONFIG.appName}.runMultiple`,
   runAtCoderProblem: `${APP_CONFIG.appName}.runAtCoderProblem`,
   runAtCoderContest: `${APP_CONFIG.appName}.runAtCoderContest`,
+  setCookie: `${APP_CONFIG.appName}.setCookie`,
 } as const;
 
 export const SETTINGS = {

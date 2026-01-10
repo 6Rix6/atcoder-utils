@@ -4,11 +4,15 @@ import { SingleRunPanel } from "./panels/SingleRunPanel";
 import { MultiTestPanel } from "./panels/MultiTestPanel";
 import { AtCoderProblemPanel } from "./panels/AtCoderProblemPanel";
 import { APP_CONFIG, COMMANDS } from "./consts/appConfig";
+import { initializeCookieStore, saveCookie } from "./utils/cookieStore";
 
 /**
  * Activate the extension
  */
 export function activate(context: vscode.ExtensionContext) {
+  // Initialize cookie store
+  initializeCookieStore(context);
+
   // Track the last active text editor
   let lastActiveEditor = vscode.window.activeTextEditor;
 
@@ -77,12 +81,32 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // Register the set cookie command
+  const setCookieCommand = vscode.commands.registerCommand(
+    COMMANDS.setCookie,
+    async () => {
+      const cookie = await vscode.window.showInputBox({
+        prompt: "Enter the AtCoder REVEL_SESSION cookie string",
+        placeHolder: "",
+        ignoreFocusOut: true,
+      });
+
+      if (cookie !== undefined) {
+        await saveCookie(cookie);
+        vscode.window.showInformationMessage(
+          `${APP_CONFIG.appDisplayName}: Cookie saved successfully.`
+        );
+      }
+    }
+  );
+
   context.subscriptions.push(
     editorChangeListener,
     runCommand,
     runMultipleCommand,
     runAtCoderProblemCommand,
-    runAtCoderContestCommand
+    runAtCoderContestCommand,
+    setCookieCommand
   );
 }
 

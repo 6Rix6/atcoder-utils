@@ -32,6 +32,10 @@
       {
         "command": "atcoder-utils.runAtCoderContest",
         "title": "AtCoder Utils: Open AtCoder Contest"
+      },
+      {
+        "command": "atcoder-utils.setCookie",
+        "title": "AtCoder Utils: Set Cookie"
       }
     ],
     "keybindings": [
