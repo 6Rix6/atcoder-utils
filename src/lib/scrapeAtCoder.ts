@@ -21,6 +21,15 @@ export interface AtCoderProblem {
   samples: SampleInput[];
 }
 
+export interface AtCoderContest {
+  id: string;
+  url: string;
+  title: string;
+  beginAt: Date;
+  endAt: Date;
+  problems: AtCoderProblem[];
+}
+
 export interface ProblemLink {
   id: string;
   name: string;
