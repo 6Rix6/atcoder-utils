@@ -28,6 +28,117 @@ const formatDuration = (minutes: number): string => {
   }
 };
 
+const formatRemainingTime = (milliseconds: number): string => {
+  if (milliseconds <= 0) return "00:00:00";
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
+
+type ContestStatus = "before" | "ongoing" | "ended" | "practice";
+
+interface ContestTimerProps {
+  beginAt: Date;
+  endAt: Date;
+  durationMinutes: number;
+}
+
+const ContestTimer: React.FC<ContestTimerProps> = ({
+  beginAt,
+  endAt,
+  durationMinutes,
+}) => {
+  const [now, setNow] = useState(new Date());
+  const [practiceStartTime, setPracticeStartTime] = useState<number | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const beginTime = new Date(beginAt).getTime();
+  const endTime = new Date(endAt).getTime();
+  const nowTime = now.getTime();
+  const practiceDurationMs = durationMinutes * 60 * 1000;
+
+  let status: ContestStatus;
+  let remainingMs: number;
+  let label: string;
+
+  if (practiceStartTime !== null) {
+    const practiceEndTime = practiceStartTime + practiceDurationMs;
+    if (nowTime < practiceEndTime) {
+      status = "practice";
+      remainingMs = practiceEndTime - nowTime;
+      label = "残り時間";
+    } else {
+      // Practice timer ended
+      status = "ended";
+      remainingMs = 0;
+      label = "";
+      setPracticeStartTime(null);
+    }
+  } else if (nowTime < beginTime) {
+    status = "before";
+    remainingMs = beginTime - nowTime;
+    label = "開始まで";
+  } else if (nowTime < endTime) {
+    status = "ongoing";
+    remainingMs = endTime - nowTime;
+    label = "残り時間";
+  } else {
+    status = "ended";
+    remainingMs = 0;
+    label = "";
+  }
+
+  const handleStartPractice = () => {
+    setPracticeStartTime(Date.now());
+  };
+
+  const handleStopPractice = () => {
+    setPracticeStartTime(null);
+  };
+
+  if (status === "ended") {
+    return (
+      <div className="contest-timer contest-timer-ended">
+        <button className="timer-start-button" onClick={handleStartPractice}>
+          タイマー開始
+        </button>
+      </div>
+    );
+  }
+
+  if (status === "practice") {
+    return (
+      <div className="contest-timer contest-timer-practice">
+        <span className="timer-label">{label}</span>
+        <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
+        <button className="timer-stop-button" onClick={handleStopPractice}>
+          停止
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`contest-timer contest-timer-${status}`}>
+      <span className="timer-label">{label}</span>
+      <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
+    </div>
+  );
+};
+
 interface ProblemItemProps {
   problem: ProblemLink;
   onClickProblem?: (problem: ProblemLink) => void;
@@ -131,6 +242,11 @@ const AtCoderContestApp = () => {
       {/* ヘッダー部分 */}
       <div className="contest-header">
         <h1 className="contest-title">{contest.title}</h1>
+        <ContestTimer
+          beginAt={contest.beginAt}
+          endAt={contest.endAt}
+          durationMinutes={contest.durationMinutes}
+        />
       </div>
 
       {/* コンテスト情報 */}

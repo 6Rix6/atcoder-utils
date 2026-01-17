@@ -25,6 +25,59 @@
 .contest-title {
   color: var(--vscode-foreground);
   @apply text-base font-semibold leading-tight flex-1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Contest Timer */
+.contest-timer {
+  @apply flex flex-col items-end text-right shrink-0;
+}
+
+.timer-label {
+  color: var(--vscode-descriptionForeground);
+  @apply text-xs;
+}
+
+.timer-value {
+  @apply text-sm font-mono font-bold;
+}
+
+.contest-timer-before .timer-value {
+  color: var(--vscode-textLink-foreground);
+}
+
+.contest-timer-ongoing .timer-value {
+  color: var(--vscode-charts-green, #4caf50);
+}
+
+.contest-timer-ended .timer-label {
+  color: var(--vscode-descriptionForeground);
+  @apply font-medium;
+}
+
+.contest-timer-practice .timer-value {
+  color: var(--vscode-charts-orange, #ff9800);
+}
+
+.timer-start-button,
+.timer-stop-button {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: none;
+  @apply text-xs px-2 py-1 rounded cursor-pointer transition-colors;
+}
+
+.timer-start-button:hover,
+.timer-stop-button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.timer-stop-button {
+  @apply mt-1;
 }
 
 /* Contest Info */
