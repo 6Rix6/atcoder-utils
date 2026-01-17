@@ -217,7 +217,7 @@ export const scrapeContest = async (
 
     const problems: ProblemLink[] = [];
 
-    $(".lang-en table tbody tr").each((_, row) => {
+    $(".lang-ja table tbody tr").each((_, row) => {
       const problemNames = $(row).find("td").first().text().trim().split(",");
 
       problemNames.forEach((name) => {
@@ -239,6 +239,32 @@ export const scrapeContest = async (
         }
       });
     });
+
+    // TODO: refactor
+    if (problems.length === 0) {
+      $(".lang-en table tbody tr").each((_, row) => {
+        const problemNames = $(row).find("td").first().text().trim().split(",");
+
+        problemNames.forEach((name) => {
+          let problemName = name.trim();
+          if (problemName === "Ex") {
+            problemName = "H";
+          }
+          if (/^[A-Z]\d?$/.test(problemName)) {
+            const problemId = `${id}_${problemName.toLowerCase()}`;
+            const problemUrl = `https://atcoder.jp/contests/${id}/tasks/${problemId}`;
+            const submitUrl = `https://atcoder.jp/contests/${id}/submit?taskScreenName=${problemId}`;
+
+            problems.push({
+              id: problemId,
+              url: problemUrl,
+              name: name.trim(),
+              submitUrl: submitUrl,
+            });
+          }
+        });
+      });
+    }
 
     return {
       id,
@@ -398,11 +424,18 @@ const generateTaskUrl = (id: string): string | null => {
 };
 
 const generateContestUrl = (id: string): string | null => {
-  const match = id.match(/([a-z0-9]+(?:_[a-z0-9]+)*)$/);
+  const urlMatch = id.match(/atcoder\.jp\/contests\/([^/]+)/);
+
+  if (urlMatch) {
+    const contestId = urlMatch[1];
+    return `https://atcoder.jp/contests/${contestId}`;
+  }
+
+  const match = id.match(/([^/]+)\/?$/);
 
   if (!match) return null;
 
-  const contestId = match[1];
+  const contestId = match[1].replace(/\/$/, "");
 
   return `https://atcoder.jp/contests/${contestId}`;
 };

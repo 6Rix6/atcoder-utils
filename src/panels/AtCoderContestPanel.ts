@@ -66,11 +66,13 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
   private async _openContest() {
     try {
       const contest = await requestContest();
-      this._contest = contest;
-      this._webviewView?.webview.postMessage({
-        command: "setContest",
-        contest,
-      });
+      if (contest) {
+        this._contest = contest;
+        this._webviewView?.webview.postMessage({
+          command: "setContest",
+          contest,
+        });
+      }
     } catch (error) {
       console.error(error);
     }
