@@ -194,7 +194,9 @@ const scrapeTask = async (url: string): Promise<AtCoderProblem | null> => {
   }
 };
 
-const scrapeContest = async (url: string): Promise<AtCoderContest | null> => {
+export const scrapeContest = async (
+  url: string,
+): Promise<AtCoderContest | null> => {
   try {
     const html = await fetchHTML(url);
     const $ = cheerio.load(html);

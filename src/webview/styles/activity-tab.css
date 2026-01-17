@@ -6,12 +6,15 @@
 
 /* Empty State */
 .empty-state {
-  @apply flex flex-col items-center justify-center gap-4 py-8;
+  @apply flex flex-col gap-4;
 }
 
 .empty-state-text {
-  color: var(--vscode-descriptionForeground);
-  @apply text-sm;
+  @apply font-thin;
+}
+
+.empty-state-button {
+  @apply w-full justify-center;
 }
 
 /* Contest Header */
@@ -63,9 +66,21 @@
   @apply flex flex-col gap-1;
 }
 
+.problem-item-container {
+  @apply w-full flex justify-between gap-1;
+}
+
 .problem-item {
   background-color: var(--vscode-list-hoverBackground);
-  @apply flex items-center gap-3 px-3 py-2 rounded cursor-pointer transition-colors;
+  @apply flex items-center gap-3 px-3 py-2 rounded-sm cursor-pointer transition-colors;
+}
+
+.problem-item-name {
+  @apply flex-1;
+}
+
+.problem-item-actions {
+  @apply aspect-square;
 }
 
 .problem-item:hover {
@@ -73,7 +88,7 @@
 }
 
 .problem-id {
-  color: var(--vscode-textLink-foreground);
+  /* color: var(--vscode-textLink-foreground); */
   @apply text-sm font-medium min-w-6;
 }
 

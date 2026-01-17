@@ -38,8 +38,32 @@
       {
         "command": "atcoder-utils.setCookie",
         "title": "AtCoder Utils: Set Cookie"
+      },
+      {
+        "command": "atcoder-utils.refreshContest",
+        "title": "AtCoder Utils: Refresh Contest",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "atcoder-utils.openContest",
+        "title": "AtCoder Utils: Open Contest",
+        "icon": "$(arrow-swap)"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "atcoder-utils.refreshContest",
+          "when": "view == atcoder-utils-panel",
+          "group": "navigation"
+        },
+        {
+          "command": "atcoder-utils.openContest",
+          "when": "view == atcoder-utils-panel",
+          "group": "navigation"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "atcoder-utils.run",

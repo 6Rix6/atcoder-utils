@@ -4,18 +4,50 @@ import {
   requestContest,
   AtCoderContest,
   ProblemLink,
+  scrapeContest,
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblemPanel } from "./AtCoderProblemPanel";
 
 export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
   private _extensionUri: vscode.Uri;
   private _contest: AtCoderContest | null = null;
+  private _webviewView: vscode.WebviewView | null = null;
+  private static _instance: AtCoderContestPanelProvider | null = null;
 
   constructor(extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri;
+    AtCoderContestPanelProvider._instance = this;
+  }
+
+  public static refresh() {
+    AtCoderContestPanelProvider._instance?._refresh();
+  }
+
+  public static open() {
+    AtCoderContestPanelProvider._instance?._openContest();
+  }
+
+  private async _refresh() {
+    if (this._contest && this._webviewView) {
+      try {
+        const url = this._contest.url;
+        const refreshed = await scrapeContest(url);
+        this._contest = refreshed;
+        this._webviewView.webview.postMessage({
+          command: "setContest",
+          contest: refreshed,
+        });
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          "Failed to refresh contest. Please try again.",
+        );
+      }
+    }
   }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
+    this._webviewView = webviewView;
+
     webviewView.webview.options = {
       enableScripts: true,
     };
@@ -31,16 +63,23 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
     });
   }
 
+  private async _openContest() {
+    try {
+      const contest = await requestContest();
+      this._contest = contest;
+      this._webviewView?.webview.postMessage({
+        command: "setContest",
+        contest,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   private async _handleMessage(message: any, webview: vscode.Webview) {
     switch (message.command) {
       case "openContest":
-        try {
-          const contest = await requestContest();
-          this._contest = contest;
-          webview.postMessage({ command: "setContest", contest });
-        } catch (error) {
-          console.error(error);
-        }
+        await this._openContest();
         return;
 
       case "getContest":
@@ -67,6 +106,13 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
             document,
             problem.url,
           );
+        }
+        return;
+
+      case "openInBrowser":
+        const url = message.url as string | undefined;
+        if (url) {
+          vscode.env.openExternal(vscode.Uri.parse(url));
         }
         return;
     }

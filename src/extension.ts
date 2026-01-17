@@ -101,6 +101,20 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  const refreshContestCommand = vscode.commands.registerCommand(
+    COMMANDS.refreshContest,
+    () => {
+      AtCoderContestPanelProvider.refresh();
+    },
+  );
+
+  const openContestCommand = vscode.commands.registerCommand(
+    COMMANDS.openContest,
+    () => {
+      AtCoderContestPanelProvider.open();
+    },
+  );
+
   context.subscriptions.push(
     editorChangeListener,
     runCommand,
@@ -108,6 +122,8 @@ export function activate(context: vscode.ExtensionContext) {
     runAtCoderProblemCommand,
     runAtCoderContestCommand,
     setCookieCommand,
+    refreshContestCommand,
+    openContestCommand,
     vscode.window.registerWebviewViewProvider(
       "atcoder-utils-panel",
       new AtCoderContestPanelProvider(context.extensionUri),

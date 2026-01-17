@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
 import { Button, Loader } from "../components";
 import "../styles/activity-tab.css";
+import { BoxArrowUpRight } from "../components/icons";
 
 const vscode = (window as any).acquireVsCodeApi();
 
@@ -36,20 +37,29 @@ const ProblemItem: React.FC<ProblemItemProps> = ({
   problem,
   onClickProblem,
 }) => {
+  const handleOpenInBrowser = () => {
+    vscode.postMessage({
+      command: "openInBrowser",
+      url: problem.url,
+    });
+  };
+
   return (
-    <div
-      className="problem-item"
-      onClick={() => onClickProblem?.(problem)}
-      role="button"
-      tabIndex={0}
-    >
-      <span className="problem-id">{problem.name || problem.id}</span>
-      {problem.timeLimit && (
-        <span className="problem-constraint">{problem.timeLimit}</span>
-      )}
-      {problem.memoryLimit && (
-        <span className="problem-constraint">{problem.memoryLimit}</span>
-      )}
+    <div className="problem-item-container">
+      <div
+        className="problem-item problem-item-name"
+        onClick={() => onClickProblem?.(problem)}
+        role="button"
+      >
+        <span className="problem-id">{problem.name || problem.id}</span>
+      </div>
+      <div
+        className="problem-item problem-item-actions"
+        onClick={handleOpenInBrowser}
+        role="button"
+      >
+        <BoxArrowUpRight />
+      </div>
     </div>
   );
 };
@@ -108,7 +118,9 @@ const AtCoderContestApp = () => {
       <div className="activity-container">
         <div className="empty-state">
           <p className="empty-state-text">コンテストが選択されていません</p>
-          <Button onClick={handleOpenContest}>コンテストを開く</Button>
+          <Button className="empty-state-button" onClick={handleOpenContest}>
+            <span>コンテストを開く</span>
+          </Button>
         </div>
       </div>
     );
