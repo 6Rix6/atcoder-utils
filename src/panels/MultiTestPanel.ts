@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { runAndWait, DetailsResponse } from "../lib/paizaApi";
-import { requireTask } from "../lib/scrapeAtCoder";
+import { requestTask } from "../lib/scrapeAtCoder";
 import { BasePanel, PanelConfig } from "./BasePanel";
 
 /**
@@ -17,8 +17,8 @@ export interface TestCaseResult {
 }
 
 const PANEL_CONFIG: PanelConfig = {
-  viewType: "paizaMultiTest",
-  title: "Paiza Multi-Test Runner",
+  viewType: "multi-test-panel",
+  title: "Multi-Test Runner",
   webviewJsPath: ["dist", "multiTestWebview.js"],
 };
 
@@ -42,7 +42,7 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
    */
   public static createOrShow(
     extensionUri: vscode.Uri,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
   ) {
     if (MultiTestPanel.currentPanel) {
       MultiTestPanel.currentPanel._setTargetDocument(document);
@@ -91,7 +91,7 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
    */
   private async _runAllTestCases(
     language: string,
-    testCases: { input: string; expectedOutput?: string }[]
+    testCases: { input: string; expectedOutput?: string }[],
   ) {
     const sourceCode = this._getSourceCode();
     if (!sourceCode) {
@@ -174,7 +174,7 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
    * Add test cases from AtCoder problem page
    */
   private async _addTestCasesFromAtCoder() {
-    const problem = await requireTask();
+    const problem = await requestTask();
     if (!problem) {
       return;
     }

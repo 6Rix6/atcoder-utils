@@ -3,6 +3,8 @@
   "displayName": "AtCoder Utils",
   "description": "Helpful utilities for competitive programming on AtCoder",
   "version": "0.0.1",
+  "publisher": "6Rix6",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/6Rix6/atcoder-utils.git"
@@ -55,14 +57,33 @@
       "properties": {
         "atcoder-utils.atCoderLanguage": {
           "type": "string",
-          "default": "English",
+          "default": "Japanese",
           "enum": [
-            "English",
-            "Japanese"
+            "Japanese",
+            "English"
           ],
           "description": "The language used to display AtCoder problems"
         }
       }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "atcoder-utils-activitybar",
+          "title": "AtCoder Utils",
+          "icon": "media/activitybar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "atcoder-utils-activitybar": [
+        {
+          "id": "atcoder-utils-panel",
+          "name": "AtCoder Utils",
+          "type": "webview",
+          "icon": "media/activitybar-icon.svg"
+        }
+      ]
     }
   },
   "scripts": {
@@ -88,6 +109,7 @@
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.1",
+    "vsce": "^2.15.0",
     "webpack": "^5.103.0",
     "webpack-cli": "^6.0.1"
   },

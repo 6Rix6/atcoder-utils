@@ -27,21 +27,25 @@ export interface AtCoderContest {
   title: string;
   beginAt: Date;
   endAt: Date;
-  problems: AtCoderProblem[];
+  durationMinutes: number;
+  problems: ProblemLink[];
 }
 
 export interface ProblemLink {
   id: string;
-  name: string;
   url: string;
-  timeLimit: string;
-  memoryLimit: string;
-  submitUrl: string;
+  name?: string;
+  timeLimit?: string;
+  memoryLimit?: string;
+  submitUrl?: string;
 }
 
-type ProgressCallback = (progress: number, problem: AtCoderProblem) => void;
+export type ProgressCallback = (
+  progress: number,
+  problem: AtCoderProblem,
+) => void;
 
-export const requireTask = async (): Promise<AtCoderProblem | null> => {
+export const requestTask = async (): Promise<AtCoderProblem | null> => {
   const result = await vscode.window.showInputBox({
     placeHolder: "https://atcoder.jp/contests/.../tasks/...",
     prompt: "Enter AtCoder task ID or URL",
@@ -64,14 +68,33 @@ export const requireTask = async (): Promise<AtCoderProblem | null> => {
     return problem;
   } catch (error) {
     vscode.window.showErrorMessage(
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
     return null;
   }
 };
 
-export const requireContest = async (
-  onProgress?: ProgressCallback
+export const getTaskFromUrlOrId = async (
+  urlOrId: string,
+): Promise<AtCoderProblem | null> => {
+  const url = generateTaskUrl(urlOrId);
+  if (!url) {
+    vscode.window.showErrorMessage("Invalid AtCoder task id");
+    return null;
+  }
+  try {
+    const problem = await scrapeTask(url);
+    return problem;
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
+};
+
+export const requestContestTasks = async (
+  onProgress?: ProgressCallback,
 ): Promise<AtCoderProblem[] | null> => {
   const result = await vscode.window.showInputBox({
     placeHolder: "https://atcoder.jp/contests/...",
@@ -91,11 +114,40 @@ export const requireContest = async (
   }
 
   try {
-    const problems = await scrapeContest(url, onProgress);
+    const problems = await scrapeContestTasks(`${url}/tasks`, onProgress);
     return problems;
   } catch (error) {
     vscode.window.showErrorMessage(
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
+};
+
+export const requestContest = async (): Promise<AtCoderContest | null> => {
+  const result = await vscode.window.showInputBox({
+    placeHolder: "https://atcoder.jp/contests/...",
+    prompt: "Enter AtCoder contest ID or URL",
+    password: false,
+  });
+
+  if (!result) {
+    return null;
+  }
+
+  const url = generateContestUrl(result);
+
+  if (!url) {
+    vscode.window.showErrorMessage("Invalid AtCoder contest id");
+    return null;
+  }
+
+  try {
+    const contest = await scrapeContest(url);
+    return contest;
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      error instanceof Error ? error.message : String(error),
     );
     return null;
   }
@@ -104,7 +156,7 @@ export const requireContest = async (
 const scrapeTask = async (url: string): Promise<AtCoderProblem | null> => {
   try {
     const setting = getSettingValue<"English" | "Japanese">(
-      SETTINGS.atCoderLanguage
+      SETTINGS.atCoderLanguage,
     );
     const language = setting ?? "English";
 
@@ -142,9 +194,67 @@ const scrapeTask = async (url: string): Promise<AtCoderProblem | null> => {
   }
 };
 
-const scrapeContest = async (
+const scrapeContest = async (url: string): Promise<AtCoderContest | null> => {
+  try {
+    const html = await fetchHTML(url);
+    const $ = cheerio.load(html);
+    const id = url.split("/contests/")[1].replace(/\/$/, "");
+
+    const title =
+      $(".contest-title").text().trim() ||
+      $("h1.text-center").first().text().trim();
+
+    const contestDuration = $("small.contest-duration");
+    const timeElements = contestDuration.find("time");
+    const beginAt = new Date(timeElements.eq(0).html() || "");
+    const endAt = new Date(timeElements.eq(1).html() || "");
+
+    const durationMinutes = Math.floor(
+      (endAt.getTime() - beginAt.getTime()) / 1000 / 60,
+    );
+
+    const problems: ProblemLink[] = [];
+
+    $(".lang-en table tbody tr").each((_, row) => {
+      const problemNames = $(row).find("td").first().text().trim().split(",");
+
+      problemNames.forEach((name) => {
+        let problemName = name.trim();
+        if (problemName === "Ex") {
+          problemName = "H";
+        }
+        if (/^[A-Z]\d?$/.test(problemName)) {
+          const problemId = `${id}_${problemName.toLowerCase()}`;
+          const problemUrl = `https://atcoder.jp/contests/${id}/tasks/${problemId}`;
+          const submitUrl = `https://atcoder.jp/contests/${id}/submit?taskScreenName=${problemId}`;
+
+          problems.push({
+            id: problemId,
+            url: problemUrl,
+            name: name.trim(),
+            submitUrl: submitUrl,
+          });
+        }
+      });
+    });
+
+    return {
+      id,
+      url,
+      title,
+      beginAt,
+      endAt,
+      durationMinutes,
+      problems,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const scrapeContestTasks = async (
   url: string,
-  onProgress?: ProgressCallback
+  onProgress?: ProgressCallback,
 ): Promise<AtCoderProblem[] | null> => {
   try {
     const html = await fetchHTML(url);
@@ -172,7 +282,7 @@ const scrapeContest = async (
   }
 };
 
-function extractProblemLinks(html: string): ProblemLink[] {
+const extractProblemLinks = (html: string): ProblemLink[] => {
   const $ = cheerio.load(html);
   const problems: ProblemLink[] = [];
 
@@ -200,7 +310,7 @@ function extractProblemLinks(html: string): ProblemLink[] {
   });
 
   return problems;
-}
+};
 
 const sleep = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
@@ -225,7 +335,7 @@ const fetchHTML = async (url: string) => {
 
 const parseSamples = (
   $: cheerio.CheerioAPI,
-  element: cheerio.Cheerio<DomElement>
+  element: cheerio.Cheerio<DomElement>,
 ): SampleInput[] => {
   const samples: SampleInput[] = [];
 
@@ -281,7 +391,7 @@ const generateTaskUrl = (id: string): string | null => {
 
   return `https://atcoder.jp/contests/${contestId.replace(
     /_/g,
-    "-"
+    "-",
   )}/tasks/${taskId}`;
 };
 
@@ -292,5 +402,5 @@ const generateContestUrl = (id: string): string | null => {
 
   const contestId = match[1];
 
-  return `https://atcoder.jp/contests/${contestId}/tasks`;
+  return `https://atcoder.jp/contests/${contestId}`;
 };

@@ -1,6 +1,10 @@
 import * as vscode from "vscode";
 import { BasePanel, PanelConfig } from "./BasePanel";
-import { requireContest, requireTask } from "../lib/scrapeAtCoder";
+import {
+  getTaskFromUrlOrId,
+  requestContestTasks,
+  requestTask,
+} from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
 import { runAndWait } from "../lib/paizaApi";
 
@@ -18,7 +22,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    problem: AtCoderProblem
+    problem: AtCoderProblem,
   ) {
     super(panel, extensionUri, PANEL_CONFIG);
     this._problem = problem;
@@ -37,9 +41,22 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
    */
   public static async createOrShow(
     extensionUri: vscode.Uri,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
   ) {
-    const problem = await requireTask();
+    const problem = await requestTask();
+    if (!problem) {
+      return;
+    }
+
+    this._createOrShowPanel(extensionUri, document, problem, undefined, true);
+  }
+
+  public static async createOrShowFromUrl(
+    extensionUri: vscode.Uri,
+    document: vscode.TextDocument,
+    urlOrId: string,
+  ) {
+    const problem = await getTaskFromUrlOrId(urlOrId);
     if (!problem) {
       return;
     }
@@ -52,10 +69,10 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
    */
   public static async createFromContest(
     extensionUri: vscode.Uri,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
   ) {
     let firstPanelId: string | null = null;
-    await requireContest((index, problem) => {
+    await requestContestTasks((index, problem) => {
       if (!firstPanelId) {
         firstPanelId = problem.id;
       }
@@ -67,7 +84,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
         document,
         problem,
         viewColumn,
-        !!index
+        !!index,
       );
       // if (!!index && firstPanelId) {
       //   const existingPanel = AtCoderProblemPanel._panels.get(firstPanelId);
@@ -85,7 +102,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     document: vscode.TextDocument,
     problem: AtCoderProblem,
     viewColumn?: vscode.ViewColumn,
-    preserveFocus?: boolean
+    preserveFocus?: boolean,
   ) {
     // Check if a panel for this problem already exists
     const existingPanel = AtCoderProblemPanel._panels.get(problem.id);
@@ -99,13 +116,13 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     const panel = BasePanel._createPanel(
       PANEL_CONFIG,
       viewColumn,
-      preserveFocus
+      preserveFocus,
     );
     panel.title = problem.id;
     AtCoderProblemPanel.currentPanel = new AtCoderProblemPanel(
       panel,
       extensionUri,
-      problem
+      problem,
     );
 
     AtCoderProblemPanel.currentPanel._setTargetDocument(document);

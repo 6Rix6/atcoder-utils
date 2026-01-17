@@ -102,9 +102,24 @@ const atCoderProblemWebviewConfig = {
   },
 };
 
+/** @type WebpackConfig */
+const atCoderContestWebviewConfig = {
+  ...baseConfig,
+  target: ["web", "es2020"],
+  entry: "./src/webview/atCoderContestIndex.tsx",
+  experiments: { outputModule: true },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "atCoderContestWebview.js",
+    libraryTarget: "module",
+    chunkFormat: "module",
+  },
+};
+
 module.exports = [
   extensionConfig,
   webviewConfig,
   multiTestWebviewConfig,
   atCoderProblemWebviewConfig,
+  atCoderContestWebviewConfig,
 ];

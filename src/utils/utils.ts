@@ -4,10 +4,10 @@ import * as path from "path";
 export function getUri(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
-  pathList: string[]
+  pathList: string[],
 ) {
   return webview.asWebviewUri(
-    vscode.Uri.file(path.join(extensionUri.fsPath, ...pathList))
+    vscode.Uri.file(path.join(extensionUri.fsPath, ...pathList)),
   );
 }
 
@@ -24,7 +24,7 @@ export function getNonce() {
 export function getWebviewContent(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
-  pathList: string[]
+  pathList: string[],
 ) {
   const webviewUri = getUri(webview, extensionUri, pathList);
   const nonce = getNonce();
@@ -34,7 +34,7 @@ export function getWebviewContent(
                   <head>
                       <meta charset="UTF-8">
                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                      <title>Paiza Multi-Test Runner</title>
+                      <title>AtCoder Utils</title>
                   </head>
                   <body>
                       <div id="app"></div>

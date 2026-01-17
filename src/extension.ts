@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { SingleRunPanel } from "./panels/SingleRunPanel";
 import { MultiTestPanel } from "./panels/MultiTestPanel";
 import { AtCoderProblemPanel } from "./panels/AtCoderProblemPanel";
+import { AtCoderContestPanelProvider } from "./panels/AtCoderContestPanel";
 import { APP_CONFIG, COMMANDS } from "./consts/appConfig";
 import { initializeCookieStore, saveCookie } from "./utils/cookieStore";
 
@@ -25,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
         MultiTestPanel.updateTargetDocument(editor.document);
         AtCoderProblemPanel.updateTargetDocument(editor.document);
       }
-    }
+    },
   );
 
   // Register the run command
@@ -50,13 +51,13 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Open the Multi-Test WebView panel with document reference
       MultiTestPanel.createOrShow(context.extensionUri, document);
-    }
+    },
   );
 
   // Register the run atcoder problem command
   const runAtCoderProblemCommand = vscode.commands.registerCommand(
     COMMANDS.runAtCoderProblem,
-    () => {
+    async () => {
       const document = getDocument(lastActiveEditor);
       if (!document) {
         return;
@@ -64,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Open the AtCoder Problem WebView panel with document reference
       AtCoderProblemPanel.createOrShow(context.extensionUri, document);
-    }
+    },
   );
 
   // Register the run atcoder contest command
@@ -78,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Open the AtCoder Problem WebView panel with document reference
       AtCoderProblemPanel.createFromContest(context.extensionUri, document);
-    }
+    },
   );
 
   // Register the set cookie command
@@ -94,10 +95,10 @@ export function activate(context: vscode.ExtensionContext) {
       if (cookie !== undefined) {
         await saveCookie(cookie);
         vscode.window.showInformationMessage(
-          `${APP_CONFIG.appDisplayName}: Cookie saved successfully.`
+          `${APP_CONFIG.appDisplayName}: Cookie saved successfully.`,
         );
       }
-    }
+    },
   );
 
   context.subscriptions.push(
@@ -106,19 +107,23 @@ export function activate(context: vscode.ExtensionContext) {
     runMultipleCommand,
     runAtCoderProblemCommand,
     runAtCoderContestCommand,
-    setCookieCommand
+    setCookieCommand,
+    vscode.window.registerWebviewViewProvider(
+      "atcoder-utils-panel",
+      new AtCoderContestPanelProvider(context.extensionUri),
+    ),
   );
 }
 
 export function deactivate() {}
 
 const getDocument = (
-  lastActiveEditor: vscode.TextEditor | undefined
+  lastActiveEditor: vscode.TextEditor | undefined,
 ): vscode.TextDocument | undefined => {
   const editor = lastActiveEditor || vscode.window.activeTextEditor;
   if (!editor) {
     vscode.window.showErrorMessage(
-      `${APP_CONFIG.appDisplayName}: No active editor found. Please open a file first.`
+      `${APP_CONFIG.appDisplayName}: No active editor found. Please open a file first.`,
     );
     return;
   }
@@ -126,7 +131,7 @@ const getDocument = (
   const document = editor.document;
   if (!document.getText().trim()) {
     vscode.window.showWarningMessage(
-      `${APP_CONFIG.appDisplayName}: The current file is empty.`
+      `${APP_CONFIG.appDisplayName}: The current file is empty.`,
     );
     return;
   }
