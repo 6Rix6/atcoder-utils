@@ -201,8 +201,10 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
         try {
           const result = await runAndWait(sourceCode, language, sample.input);
 
+          console.log({ result });
+
           // Check if output matches expected
-          let verdict: "AC" | "WA" | "RE" | "CE" | null = null;
+          let verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null = null;
           const expectedOutput = sample.output.trim();
           if (expectedOutput !== "") {
             const actualOutput = result.stdout.trim();
@@ -210,6 +212,8 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
               verdict = actualOutput === expectedOutput ? "AC" : "WA";
             } else if (result.build_result === "failure") {
               verdict = "CE";
+            } else if (result.time >= 1.0) {
+              verdict = "TLE";
             } else {
               verdict = "RE";
             }

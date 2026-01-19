@@ -13,7 +13,7 @@ export interface TestCaseResult {
   result: DetailsResponse | null;
   error?: string;
   status: "pending" | "running" | "completed" | "error";
-  verdict: "AC" | "WA" | "RE" | "CE" | null;
+  verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null;
 }
 
 const PANEL_CONFIG: PanelConfig = {
@@ -115,7 +115,7 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
           const result = await runAndWait(sourceCode, language, testCase.input);
 
           // Check if output matches expected (if provided)
-          let verdict: "AC" | "WA" | "RE" | "CE" | null = null;
+          let verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null = null;
           if (
             testCase.expectedOutput !== undefined &&
             testCase.expectedOutput.trim() !== ""
@@ -126,6 +126,8 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
               verdict = actualOutput === expectedOutput ? "AC" : "WA";
             } else if (result.build_result === "failure") {
               verdict = "CE";
+            } else if (result.time >= 1.0) {
+              verdict = "TLE";
             } else {
               verdict = "RE";
             }

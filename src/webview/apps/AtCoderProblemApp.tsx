@@ -62,9 +62,9 @@ const AtCoderProblemApp = () => {
           setExpandedTests(
             new Set(
               message.results.map((result: TestCaseResult, i: number) =>
-                result.verdict !== "AC" ? i : -1
-              )
-            )
+                result.verdict !== "AC" ? i : -1,
+              ),
+            ),
           );
           break;
 
@@ -172,6 +172,8 @@ const AtCoderProblemApp = () => {
         return "verdict-re";
       case "CE":
         return "verdict-ce";
+      case "TLE":
+        return "verdict-tle";
       default:
         return "";
     }
@@ -293,7 +295,7 @@ const AtCoderProblemApp = () => {
                   {results[index] && (
                     <span
                       className={`verdict-badge ${getVerdictClass(
-                        results[index].verdict
+                        results[index].verdict,
                       )}`}
                     >
                       {results[index].verdict || results[index].result?.result}

@@ -123,7 +123,7 @@ const MultiTestApp = () => {
   };
 
   const handleTargetFileChange = (
-    value: string | DropdownOption | undefined
+    value: string | DropdownOption | undefined,
   ) => {
     if (value && typeof value !== "string") {
       const uri = value.value;
@@ -167,10 +167,10 @@ const MultiTestApp = () => {
   const updateTestCase = (
     id: number,
     field: "input" | "expectedOutput",
-    value: string
+    value: string,
   ) => {
     setTestCases(
-      testCases.map((tc) => (tc.id === id ? { ...tc, [field]: value } : tc))
+      testCases.map((tc) => (tc.id === id ? { ...tc, [field]: value } : tc)),
     );
   };
 
@@ -215,7 +215,7 @@ const MultiTestApp = () => {
 
   return (
     <div className="container">
-      <h1>Paiza Multi-Test Runner</h1>
+      <h1>Multi-Test Code Runner</h1>
 
       <div className="w-full flex gap-4">
         <div className="form-group">
@@ -271,7 +271,7 @@ const MultiTestApp = () => {
               {results[index] && (
                 <span
                   className={`verdict-badge ${getVerdictClass(
-                    results[index].verdict
+                    results[index].verdict,
                   )}`}
                 >
                   {results[index].verdict || results[index].result?.result}
@@ -306,7 +306,7 @@ const MultiTestApp = () => {
                     updateTestCase(
                       testCase.id,
                       "expectedOutput",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   placeholder="Enter expected output for AC/WA check..."
