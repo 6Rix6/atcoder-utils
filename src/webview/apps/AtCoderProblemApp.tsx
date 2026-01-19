@@ -13,7 +13,7 @@ import {
   Circle,
 } from "../components/icons";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
-import { TestCaseResult } from "../../panels/MultiTestPanel";
+import { TestCaseResult, Verdict } from "../../types/TestCaseResult";
 
 const vscode = (window as any).acquireVsCodeApi();
 
@@ -162,7 +162,7 @@ const AtCoderProblemApp = () => {
     });
   };
 
-  const getVerdictClass = (verdict: string | null) => {
+  const getVerdictClass = (verdict: Verdict | null) => {
     switch (verdict) {
       case "AC":
         return "verdict-ac";
@@ -179,7 +179,8 @@ const AtCoderProblemApp = () => {
     }
   };
 
-  const formatBytes = (bytes: number) => {
+  const formatBytes = (bytes?: number) => {
+    if (bytes === undefined || bytes === null) return "unavailable";
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;

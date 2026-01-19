@@ -2,19 +2,7 @@ import * as vscode from "vscode";
 import { runAndWait, DetailsResponse } from "../lib/paizaApi";
 import { requestTask } from "../lib/scrapeAtCoder";
 import { BasePanel, PanelConfig } from "./BasePanel";
-
-/**
- * Test case result for parallel execution
- */
-export interface TestCaseResult {
-  index: number;
-  input: string;
-  expectedOutput?: string;
-  result: DetailsResponse | null;
-  error?: string;
-  status: "pending" | "running" | "completed" | "error";
-  verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null;
-}
+import { Verdict } from "../types/TestCaseResult";
 
 const PANEL_CONFIG: PanelConfig = {
   viewType: "multi-test-panel",
@@ -115,7 +103,7 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
           const result = await runAndWait(sourceCode, language, testCase.input);
 
           // Check if output matches expected (if provided)
-          let verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null = null;
+          let verdict: Verdict = null;
           if (
             testCase.expectedOutput !== undefined &&
             testCase.expectedOutput.trim() !== ""

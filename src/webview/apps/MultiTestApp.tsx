@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "../components";
 import { SampleInput } from "../../lib/scrapeAtCoder";
-import { TestCaseResult } from "../../panels/MultiTestPanel";
+import type { TestCaseResult, Verdict } from "../../types/TestCaseResult";
 import type { OpenEditor } from "../../types/OpenEditor";
-import { Plus } from "../components/icons/Plus";
-import { Link45Deg } from "../components/icons/Link45Deg";
+import { Plus, Link45Deg } from "../components/icons";
 
 const vscode = (window as any).acquireVsCodeApi();
 
@@ -182,13 +181,14 @@ const MultiTestApp = () => {
     }
   };
 
-  const formatBytes = (bytes: number) => {
+  const formatBytes = (bytes?: number) => {
+    if (bytes === undefined || bytes === null) return "unavailable";
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const getVerdictClass = (verdict: string | null) => {
+  const getVerdictClass = (verdict: Verdict | null) => {
     switch (verdict) {
       case "AC":
         return "verdict-ac";

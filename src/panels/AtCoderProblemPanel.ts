@@ -7,6 +7,7 @@ import {
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
 import { runAndWait } from "../lib/paizaApi";
+import { Verdict } from "../types/TestCaseResult";
 
 const PANEL_CONFIG: PanelConfig = {
   viewType: "atCoderProblem",
@@ -204,7 +205,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
           console.log({ result });
 
           // Check if output matches expected
-          let verdict: "AC" | "WA" | "RE" | "CE" | "TLE" | null = null;
+          let verdict: Verdict = null;
           const expectedOutput = sample.output.trim();
           if (expectedOutput !== "") {
             const actualOutput = result.stdout.trim();
