@@ -13,9 +13,13 @@ import {
   Circle,
 } from "../components/icons";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
-import { TestCaseResult, Verdict } from "../../types/TestCaseResult";
+import { TestCaseResult } from "../../types/TestCaseResult";
+import { getVscode } from "../utils/getVscode";
+import { formatBytes } from "../utils/formatUtils";
+import { getVerdictClass } from "../utils/getVerdictClass";
+import { getSummary } from "../utils/getSummary";
 
-const vscode = (window as any).acquireVsCodeApi();
+const vscode = getVscode();
 
 const AtCoderProblemApp = () => {
   const [problem, setProblem] = useState<AtCoderProblem | null>(null);
@@ -162,39 +166,7 @@ const AtCoderProblemApp = () => {
     });
   };
 
-  const getVerdictClass = (verdict: Verdict | null) => {
-    switch (verdict) {
-      case "AC":
-        return "verdict-ac";
-      case "WA":
-        return "verdict-wa";
-      case "RE":
-        return "verdict-re";
-      case "CE":
-        return "verdict-ce";
-      case "TLE":
-        return "verdict-tle";
-      default:
-        return "";
-    }
-  };
-
-  const formatBytes = (bytes?: number) => {
-    if (bytes === undefined || bytes === null) return "unavailable";
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const getSummary = () => {
-    if (results.length === 0) return null;
-    const ac = results.filter((r) => r.verdict === "AC").length;
-    const total = results.length;
-    const allPassed = ac === total && results.every((r) => r.verdict === "AC");
-    return { ac, total, allPassed };
-  };
-
-  const summary = getSummary();
+  const summary = getSummary(results);
 
   return problem?.bodyHtml ? (
     <div className="problem-container">

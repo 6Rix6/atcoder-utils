@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { DetailsResponse, SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "../components";
 import type { OpenEditor } from "../../types/OpenEditor";
+import { formatBytes } from "../utils/formatUtils";
+import { getVscode } from "../utils/getVscode";
 
-const vscode = (window as any).acquireVsCodeApi();
+const vscode = getVscode();
 
 const App = () => {
   const [language, setLanguage] = useState("");
@@ -87,7 +89,7 @@ const App = () => {
   };
 
   const handleTargetFileChange = (
-    value: string | DropdownOption | undefined
+    value: string | DropdownOption | undefined,
   ) => {
     if (value && typeof value !== "string") {
       const uri = value.value;
@@ -99,12 +101,6 @@ const App = () => {
         });
       }
     }
-  };
-
-  const formatBytes = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (

@@ -3,41 +3,14 @@ import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
 import { Button, Loader } from "../components";
 import "../styles/activity-tab.css";
 import { BoxArrowUpRight } from "../components/icons";
+import { getVscode } from "../utils/getVscode";
+import {
+  formatDate,
+  formatDuration,
+  formatRemainingTime,
+} from "../utils/formatUtils";
 
-const vscode = (window as any).acquireVsCodeApi();
-
-const formatDate = (date: Date): string => {
-  return new Date(date).toLocaleString("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const formatDuration = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hours > 0 && mins > 0) {
-    return `${hours}時間${mins}分`;
-  } else if (hours > 0) {
-    return `${hours}時間`;
-  } else {
-    return `${mins}分`;
-  }
-};
-
-const formatRemainingTime = (milliseconds: number): string => {
-  if (milliseconds <= 0) return "00:00:00";
-
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
+const vscode = getVscode();
 
 type ContestStatus = "before" | "ongoing" | "ended" | "practice";
 
@@ -45,6 +18,11 @@ interface ContestTimerProps {
   beginAt: Date;
   endAt: Date;
   durationMinutes: number;
+}
+
+interface ProblemItemProps {
+  problem: ProblemLink;
+  onClickProblem?: (problem: ProblemLink) => void;
 }
 
 const ContestTimer: React.FC<ContestTimerProps> = ({
@@ -138,11 +116,6 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
     </div>
   );
 };
-
-interface ProblemItemProps {
-  problem: ProblemLink;
-  onClickProblem?: (problem: ProblemLink) => void;
-}
 
 const ProblemItem: React.FC<ProblemItemProps> = ({
   problem,
