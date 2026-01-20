@@ -7,6 +7,7 @@ import {
   scrapeContest,
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblemPanel } from "./AtCoderProblemPanel";
+import { APP_CONFIG } from "../consts/appConfig";
 
 export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
   private _extensionUri: vscode.Uri;
@@ -99,7 +100,7 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
         const document = vscode.window.activeTextEditor?.document;
         if (!document) {
           vscode.window.showErrorMessage(
-            "No active editor found. Please open a file first.",
+            `${APP_CONFIG.appDisplayName}: No active editor found. Please open a file first.`,
           );
           return;
         }
