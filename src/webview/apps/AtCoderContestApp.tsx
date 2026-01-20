@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
 import { Button, Loader } from "../components";
 import "../styles/activity-tab.css";
+import "../styles/scrollbar.css";
 import { BoxArrowUpRight } from "../components/icons";
 import { getVscode } from "../utils/getVscode";
 import {

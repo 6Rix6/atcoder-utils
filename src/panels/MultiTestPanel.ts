@@ -7,7 +7,8 @@ import { Verdict } from "../types/TestCaseResult";
 const PANEL_CONFIG: PanelConfig = {
   viewType: "multi-test-panel",
   title: "Multi-Test Runner",
-  webviewJsPath: ["dist", "multiTestWebview.js"],
+  webviewJsPath: ["dist", "webview.js"],
+  appType: "multi-test",
 };
 
 /**

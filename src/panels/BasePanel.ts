@@ -11,6 +11,7 @@ export interface PanelConfig {
   viewType: string;
   title: string;
   webviewJsPath: string[];
+  appType: string;
 }
 
 /**
@@ -25,13 +26,14 @@ export abstract class BasePanel<T extends BasePanel<T>> {
   protected constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    config: PanelConfig
+    config: PanelConfig,
   ) {
     this._panel = panel;
     this._panel.webview.html = getWebviewContent(
       this._panel.webview,
       extensionUri,
-      config.webviewJsPath
+      config.webviewJsPath,
+      config.appType,
     );
 
     // Handle messages from webview
@@ -40,7 +42,7 @@ export abstract class BasePanel<T extends BasePanel<T>> {
         await this._handleMessage(message);
       },
       null,
-      this._disposables
+      this._disposables,
     );
 
     // Handle disposal
@@ -141,7 +143,7 @@ export abstract class BasePanel<T extends BasePanel<T>> {
         const uri = message.uri;
         if (uri) {
           const document = vscode.workspace.textDocuments.find(
-            (doc) => doc.uri.toString() === uri
+            (doc) => doc.uri.toString() === uri,
           );
           if (document) {
             this._setTargetDocument(document);
@@ -192,7 +194,7 @@ export abstract class BasePanel<T extends BasePanel<T>> {
   protected static _createPanel(
     config: PanelConfig,
     viewColumn?: vscode.ViewColumn,
-    preserveFocus?: boolean
+    preserveFocus?: boolean,
   ): vscode.WebviewPanel {
     const column = viewColumn ?? vscode.ViewColumn.Beside;
     return vscode.window.createWebviewPanel(
@@ -202,7 +204,7 @@ export abstract class BasePanel<T extends BasePanel<T>> {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-      }
+      },
     );
   }
 }

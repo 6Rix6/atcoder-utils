@@ -12,7 +12,8 @@ import { Verdict } from "../types/TestCaseResult";
 const PANEL_CONFIG: PanelConfig = {
   viewType: "atCoderProblem",
   title: "",
-  webviewJsPath: ["dist", "atCoderProblemWebview.js"],
+  webviewJsPath: ["dist", "webview.js"],
+  appType: "atcoder-problem",
 };
 
 export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {

@@ -25,6 +25,7 @@ export function getWebviewContent(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
   pathList: string[],
+  appType?: string,
 ) {
   const webviewUri = getUri(webview, extensionUri, pathList);
   const nonce = getNonce();
@@ -38,6 +39,7 @@ export function getWebviewContent(
                   </head>
                   <body>
                       <div id="app"></div>
+                      <script nonce="${nonce}">window.__APP_TYPE__ = "${appType ?? "default"}";</script>
                       <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
                   </body>
               </html>`;

@@ -6,6 +6,7 @@ const PANEL_CONFIG: PanelConfig = {
   viewType: "singleCodeRunner",
   title: "Code Runner",
   webviewJsPath: ["dist", "webview.js"],
+  appType: "default",
 };
 
 /**
@@ -28,7 +29,7 @@ export class SingleRunPanel extends BasePanel<SingleRunPanel> {
    */
   public static createOrShow(
     extensionUri: vscode.Uri,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
   ) {
     if (SingleRunPanel.currentPanel) {
       SingleRunPanel.currentPanel._setTargetDocument(document);

@@ -1,3 +1,4 @@
+import "../styles/index.css";
 import React, { useState, useEffect } from "react";
 import { DetailsResponse, SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { Button, Dropdown, DropdownOption } from "../components";

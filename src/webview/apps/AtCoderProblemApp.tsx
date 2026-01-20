@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "katex/dist/katex.min.css";
+import "../styles/atcoder.css";
+import "../styles/scrollbar.css";
 import katex from "katex";
 
 import { AtCoderProblem } from "../../lib/scrapeAtCoder";

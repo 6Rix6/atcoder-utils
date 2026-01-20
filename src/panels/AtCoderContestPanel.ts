@@ -55,7 +55,8 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = getWebviewContent(
       webviewView.webview,
       this._extensionUri,
-      ["dist", "atCoderContestWebview.js"],
+      ["dist", "webview.js"],
+      "atcoder-contest",
     );
 
     webviewView.webview.onDidReceiveMessage((message) => {
