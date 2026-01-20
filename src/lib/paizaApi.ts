@@ -6,10 +6,7 @@
 const API_BASE = "https://api.paiza.io";
 const API_KEY = "guest";
 
-// ============================================================================
 // Type Definitions
-// ============================================================================
-
 export interface CreateResponse {
   id: string;
   status: "running" | "completed";
@@ -40,10 +37,7 @@ export interface DetailsResponse {
   result: "success" | "failure" | "error";
 }
 
-// ============================================================================
 // Supported Languages
-// ============================================================================
-
 export const SUPPORTED_LANGUAGES = [
   { id: "python3", label: "Python 3" },
   { id: "python", label: "Python 2" },
@@ -122,14 +116,10 @@ const VSCODE_TO_PAIZA_MAP: Record<string, LanguageId> = {
  * Returns undefined if no mapping found
  */
 export function detectLanguage(
-  vscodeLanguageId: string
+  vscodeLanguageId: string,
 ): LanguageId | undefined {
   return VSCODE_TO_PAIZA_MAP[vscodeLanguageId];
 }
-
-// ============================================================================
-// API Functions
-// ============================================================================
 
 /**
  * Create a new runner session
@@ -137,7 +127,7 @@ export function detectLanguage(
 export async function createRunner(
   sourceCode: string,
   language: string,
-  input?: string
+  input?: string,
 ): Promise<CreateResponse> {
   const body = new URLSearchParams({
     api_key: API_KEY,
@@ -167,8 +157,8 @@ export async function createRunner(
 export async function getStatus(id: string): Promise<StatusResponse> {
   const response = await fetch(
     `${API_BASE}/runners/get_status.json?api_key=${API_KEY}&id=${encodeURIComponent(
-      id
-    )}`
+      id,
+    )}`,
   );
 
   if (!response.ok) {
@@ -184,8 +174,8 @@ export async function getStatus(id: string): Promise<StatusResponse> {
 export async function getDetails(id: string): Promise<DetailsResponse> {
   const response = await fetch(
     `${API_BASE}/runners/get_details.json?api_key=${API_KEY}&id=${encodeURIComponent(
-      id
-    )}`
+      id,
+    )}`,
   );
 
   if (!response.ok) {
@@ -203,7 +193,7 @@ export async function runAndWait(
   language: string,
   input?: string,
   maxWaitMs: number = 30000,
-  pollIntervalMs: number = 500
+  pollIntervalMs: number = 500,
 ): Promise<DetailsResponse> {
   const createResult = await createRunner(sourceCode, language, input);
 
