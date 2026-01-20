@@ -43,6 +43,13 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [pausedAt, setPausedAt] = useState<number | null>(null);
 
+  // Reset timer when contest changes
+  useEffect(() => {
+    setPracticeStartTime(null);
+    setPausedAt(null);
+    setIsTimerRunning(false);
+  }, [beginAt]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
