@@ -3,7 +3,12 @@ import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
 import { Button, Loader } from "../components";
 import "../styles/activity-tab.css";
 import "../styles/scrollbar.css";
-import { BoxArrowUpRight } from "../components/icons";
+import {
+  BoxArrowUpRight,
+  Play,
+  Pause,
+  ArrowClockwise,
+} from "../components/icons";
 import { getVscode } from "../utils/getVscode";
 import {
   formatDate,
@@ -35,6 +40,8 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
   const [practiceStartTime, setPracticeStartTime] = useState<number | null>(
     null,
   );
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [pausedAt, setPausedAt] = useState<number | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,16 +62,17 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
 
   if (practiceStartTime !== null) {
     const practiceEndTime = practiceStartTime + practiceDurationMs;
-    if (nowTime < practiceEndTime) {
+    const effectiveNowTime = pausedAt !== null ? pausedAt : nowTime;
+    if (effectiveNowTime < practiceEndTime) {
       status = "practice";
-      remainingMs = practiceEndTime - nowTime;
+      remainingMs = practiceEndTime - effectiveNowTime;
       label = "残り時間";
     } else {
-      // Practice timer ended
       status = "ended";
-      remainingMs = 0;
-      label = "";
+      remainingMs = practiceDurationMs;
+      label = "残り時間";
       setPracticeStartTime(null);
+      setPausedAt(null);
     }
   } else if (nowTime < beginTime) {
     status = "before";
@@ -76,44 +84,67 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
     label = "残り時間";
   } else {
     status = "ended";
-    remainingMs = 0;
-    label = "";
+    remainingMs = practiceDurationMs;
+    label = "残り時間";
   }
 
   const handleStartPractice = () => {
-    setPracticeStartTime(Date.now());
+    const currentTime = Date.now();
+    if (practiceStartTime === null) {
+      setPracticeStartTime(currentTime);
+    } else if (pausedAt !== null) {
+      const pauseDuration = currentTime - pausedAt;
+      setPracticeStartTime(practiceStartTime + pauseDuration);
+    }
+    setPausedAt(null);
+    setNow(new Date());
+    setIsTimerRunning(true);
   };
 
-  const handleStopPractice = () => {
+  const handlePausePractice = () => {
+    setPausedAt(Date.now());
+    setIsTimerRunning(false);
+  };
+
+  const handleResetPractice = () => {
     setPracticeStartTime(null);
+    setPausedAt(null);
+    setIsTimerRunning(false);
   };
-
-  if (status === "ended") {
-    return (
-      <div className="contest-timer contest-timer-ended">
-        <button className="timer-start-button" onClick={handleStartPractice}>
-          タイマー開始
-        </button>
-      </div>
-    );
-  }
-
-  if (status === "practice") {
-    return (
-      <div className="contest-timer contest-timer-practice">
-        <span className="timer-label">{label}</span>
-        <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
-        <button className="timer-stop-button" onClick={handleStopPractice}>
-          停止
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className={`contest-timer contest-timer-${status}`}>
-      <span className="timer-label">{label}</span>
-      <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
+      <div className="timer-value-container">
+        <span className="timer-label">{label}</span>
+        <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
+      </div>
+      {status === "ended" || status === "practice" ? (
+        <div className="timer-buttons-container">
+          <button
+            className="timer-button timer-reset-button"
+            onClick={handleResetPractice}
+          >
+            <ArrowClockwise />
+          </button>
+          {isTimerRunning ? (
+            <button
+              className="timer-button timer-pause-button"
+              onClick={handlePausePractice}
+            >
+              <Pause />
+            </button>
+          ) : (
+            <button
+              className="timer-button timer-start-button"
+              onClick={handleStartPractice}
+            >
+              <Play />
+            </button>
+          )}
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
@@ -191,9 +222,6 @@ const AtCoderContestApp = () => {
     });
   };
 
-  // const handleOpenInBrowser = () => {
-  // };
-
   if (isLoading) {
     return <Loader />;
   }
@@ -216,15 +244,14 @@ const AtCoderContestApp = () => {
       {/* ヘッダー部分 */}
       <div className="contest-header">
         <h1 className="contest-title">{contest.title}</h1>
-        <ContestTimer
-          beginAt={contest.beginAt}
-          endAt={contest.endAt}
-          durationMinutes={contest.durationMinutes}
-        />
       </div>
 
       {/* コンテスト情報 */}
       <div className="contest-info">
+        <div className="contest-info-row">
+          <span className="contest-info-label">コンテストID</span>
+          <span className="contest-info-value">{contest.id}</span>
+        </div>
         <div className="contest-info-row">
           <span className="contest-info-label">開始</span>
           <span className="contest-info-value">
@@ -243,6 +270,15 @@ const AtCoderContestApp = () => {
             {formatDuration(contest.durationMinutes)}
           </span>
         </div>
+      </div>
+
+      {/* タイマー */}
+      <div className="contest-info">
+        <ContestTimer
+          beginAt={contest.beginAt}
+          endAt={contest.endAt}
+          durationMinutes={contest.durationMinutes}
+        />
       </div>
 
       {/* 問題リスト */}

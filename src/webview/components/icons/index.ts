@@ -5,3 +5,5 @@ export * from "./Play";
 export * from "./Plus";
 export * from "./Check2";
 export * from "./Circle";
+export * from "./Pause";
+export * from "./ArrowClockwise";

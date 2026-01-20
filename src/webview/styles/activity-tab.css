@@ -34,7 +34,15 @@
 
 /* Contest Timer */
 .contest-timer {
-  @apply flex flex-col items-end text-right shrink-0;
+  @apply w-full flex items-center justify-between py-1;
+}
+
+.timer-value-container {
+  @apply flex flex-col;
+}
+
+.timer-buttons-container {
+  @apply flex gap-2;
 }
 
 .timer-label {
@@ -43,7 +51,7 @@
 }
 
 .timer-value {
-  @apply text-sm font-mono font-bold;
+  @apply text-lg font-mono font-bold;
 }
 
 .contest-timer-before .timer-value {
@@ -63,21 +71,15 @@
   color: var(--vscode-charts-orange, #ff9800);
 }
 
-.timer-start-button,
-.timer-stop-button {
+.timer-button {
   background-color: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
   border: none;
   @apply text-xs px-2 py-1 rounded cursor-pointer transition-colors;
 }
 
-.timer-start-button:hover,
-.timer-stop-button:hover {
+.timer-button:hover {
   background-color: var(--vscode-button-secondaryHoverBackground);
-}
-
-.timer-stop-button {
-  @apply mt-1;
 }
 
 /* Contest Info */
