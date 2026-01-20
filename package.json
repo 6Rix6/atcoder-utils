@@ -4,7 +4,7 @@
   "description": "Helpful utilities for competitive programming on AtCoder",
   "version": "0.0.1",
   "publisher": "6Rix6",
-  "icon": "media/icon.png",
+  "icon": "media/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/6Rix6/atcoder-utils.git"
@@ -95,7 +95,7 @@
         {
           "id": "atcoder-utils-activitybar",
           "title": "AtCoder Utils",
-          "icon": "media/activitybar-icon.svg"
+          "icon": "media/logo.svg"
         }
       ]
     },
@@ -105,7 +105,7 @@
           "id": "atcoder-utils-panel",
           "name": "AtCoder Utils",
           "type": "webview",
-          "icon": "media/activitybar-icon.svg"
+          "icon": "media/logo.svg"
         }
       ]
     }
