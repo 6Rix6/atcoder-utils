@@ -64,18 +64,6 @@
         }
       ]
     },
-    "keybindings": [
-      {
-        "command": "atcoder-utils.run",
-        "key": "ctrl+alt+p",
-        "mac": "cmd+alt+p"
-      },
-      {
-        "command": "atcoder-utils.runMultiple",
-        "key": "ctrl+alt+shift+p",
-        "mac": "cmd+alt+shift+p"
-      }
-    ],
     "configuration": {
       "title": "AtCoder Utils",
       "properties": {
