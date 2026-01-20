@@ -23,8 +23,8 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
     AtCoderContestPanelProvider._instance?._refresh();
   }
 
-  public static open() {
-    AtCoderContestPanelProvider._instance?._openContest();
+  public static async open() {
+    await AtCoderContestPanelProvider._instance?._openContest();
   }
 
   private async _refresh() {

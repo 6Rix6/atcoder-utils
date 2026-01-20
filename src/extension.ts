@@ -71,14 +71,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Register the run atcoder contest command
   const runAtCoderContestCommand = vscode.commands.registerCommand(
     COMMANDS.runAtCoderContest,
-    () => {
-      const document = getDocument(lastActiveEditor);
-      if (!document) {
-        return;
-      }
-
-      // Open the AtCoder Problem WebView panel with document reference
-      AtCoderProblemPanel.createFromContest(context.extensionUri, document);
+    async () => {
+      await AtCoderContestPanelProvider.open();
+      vscode.commands.executeCommand("atcoder-utils-panel.focus");
     },
   );
 
