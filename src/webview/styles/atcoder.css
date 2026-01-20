@@ -235,16 +235,22 @@ hr {
   border-radius: 3px;
   border-left: 3px solid var(--vscode-textLink-foreground);
 }
+/* 
+.result-content {
+  display: flex;
+} */
 
 .result-output,
 .result-stderr,
-.result-build-error {
+.result-build-error,
+.result-expected-output {
   margin-top: 0.75rem;
 }
 
 .result-output strong,
 .result-stderr strong,
-.result-build-error strong {
+.result-build-error strong,
+.result-expected-output strong {
   display: block;
   color: var(--vscode-foreground);
   font-size: 0.8125rem;

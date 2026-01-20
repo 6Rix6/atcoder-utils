@@ -144,6 +144,7 @@ const AtCoderProblemApp = () => {
         command: "runAll",
         language,
       });
+      setExpandedTests(new Set());
     }
   };
 
@@ -288,25 +289,35 @@ const AtCoderProblemApp = () => {
                           ms | Memory:{" "}
                           {formatBytes(results[index].result!.memory)}
                         </div>
-                        {results[index].result!.stdout && (
-                          <div className="result-output">
-                            <strong>Output:</strong>
-                            <pre>{results[index].result!.stdout}</pre>
-                          </div>
-                        )}
-                        {results[index].result!.stderr && (
-                          <div className="result-stderr">
-                            <strong>Stderr:</strong>
-                            <pre>{results[index].result!.stderr}</pre>
-                          </div>
-                        )}
-                        {results[index].result!.build_stderr &&
-                          results[index].result!.build_result !== "success" && (
-                            <div className="result-build-error">
-                              <strong>Build Error:</strong>
-                              <pre>{results[index].result!.build_stderr}</pre>
+                        <div className="result-content">
+                          {results[index].result!.stdout && (
+                            <div className="result-output">
+                              <strong>Output</strong>
+                              <pre>{results[index].result!.stdout}</pre>
                             </div>
                           )}
+                          {results[index].verdict === "WA" &&
+                            problem.samples[index] && (
+                              <div className="result-expected-output">
+                                <strong>Expected Output</strong>
+                                <pre>{problem.samples[index].output}</pre>
+                              </div>
+                            )}
+                          {results[index].result!.stderr && (
+                            <div className="result-stderr">
+                              <strong>Stderr</strong>
+                              <pre>{results[index].result!.stderr}</pre>
+                            </div>
+                          )}
+                          {results[index].result!.build_stderr &&
+                            results[index].result!.build_result !==
+                              "success" && (
+                              <div className="result-build-error">
+                                <strong>Build Error</strong>
+                                <pre>{results[index].result!.build_stderr}</pre>
+                              </div>
+                            )}
+                        </div>
                       </div>
                     )}
 
