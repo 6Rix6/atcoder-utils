@@ -241,12 +241,12 @@ const AtCoderContestApp = () => {
 
   return (
     <div className="activity-container">
-      {/* ヘッダー部分 */}
+      {/* Header */}
       <div className="contest-header">
         <h1 className="contest-title">{contest.title}</h1>
       </div>
 
-      {/* コンテスト情報 */}
+      {/* Contest info */}
       <div className="contest-info">
         <div className="contest-info-row">
           <span className="contest-info-label">コンテストID</span>
@@ -272,7 +272,7 @@ const AtCoderContestApp = () => {
         </div>
       </div>
 
-      {/* タイマー */}
+      {/* Timer */}
       <div className="contest-info">
         <ContestTimer
           beginAt={contest.beginAt}
@@ -281,7 +281,7 @@ const AtCoderContestApp = () => {
         />
       </div>
 
-      {/* 問題リスト */}
+      {/* Problems list */}
       <div className="problems-section">
         <h2 className="section-title">問題一覧</h2>
         {contest.problems.length > 0 ? (
