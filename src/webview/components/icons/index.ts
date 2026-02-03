@@ -7,3 +7,5 @@ export * from "./Check2";
 export * from "./Circle";
 export * from "./Pause";
 export * from "./ArrowClockwise";
+export * from "./Trash";
+export * from "./X";

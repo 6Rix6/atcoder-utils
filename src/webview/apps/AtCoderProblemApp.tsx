@@ -4,7 +4,7 @@ import "../styles/atcoder.css";
 import "../styles/scrollbar.css";
 import katex from "katex";
 
-import { AtCoderProblem } from "../../lib/scrapeAtCoder";
+import { AtCoderProblem, SampleInput } from "../../lib/scrapeAtCoder";
 import { Divider } from "../components/Divider";
 import { Button, Dropdown, DropdownOption } from "../components";
 import {
@@ -13,6 +13,9 @@ import {
   ChevronRight,
   Check2,
   Circle,
+  Plus,
+  Trash,
+  X,
 } from "../components/icons";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { TestCaseResult } from "../../types/TestCaseResult";
@@ -20,6 +23,7 @@ import { getVscode } from "../utils/getVscode";
 import { formatBytes } from "../utils/formatUtils";
 import { getVerdictClass } from "../utils/getVerdictClass";
 import { getSummary } from "../utils/getSummary";
+import { TextArea } from "../components/TextArea";
 
 const vscode = getVscode();
 
@@ -31,6 +35,7 @@ const AtCoderProblemApp = () => {
   const [runningIndices, setRunningIndices] = useState<Set<number>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
+  const [customInputs, setCustomInputs] = useState<SampleInput[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -94,6 +99,7 @@ const AtCoderProblemApp = () => {
     };
   }, []);
 
+  // katex rendering
   useEffect(() => {
     if (!containerRef.current || !problem) return;
 
@@ -143,6 +149,7 @@ const AtCoderProblemApp = () => {
       vscode.postMessage({
         command: "runAll",
         language,
+        customInputs,
       });
       setExpandedTests(new Set());
     }
@@ -165,6 +172,30 @@ const AtCoderProblemApp = () => {
       } else {
         next.add(index);
       }
+      return next;
+    });
+  };
+
+  const handleAddTestCase = () => {
+    setCustomInputs((prev) => [...prev, { input: "", output: "" }]);
+  };
+
+  const handleRemoveTestCase = (index: number) => {
+    setCustomInputs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleInputChange = (index: number, value: string) => {
+    setCustomInputs((prev) => {
+      const next = [...prev];
+      next[index].input = value;
+      return next;
+    });
+  };
+
+  const handleOutputChange = (index: number, value: string) => {
+    setCustomInputs((prev) => {
+      const next = [...prev];
+      next[index].output = value;
       return next;
     });
   };
@@ -245,7 +276,7 @@ const AtCoderProblemApp = () => {
         {(results.length > 0 || runningIndices.size > 0) && problem.samples && (
           <div className="test-cases-section">
             <h2 className="text-lg font-bold mb-2">Results</h2>
-            {problem.samples.map((_, index) => (
+            {[...problem.samples, ...(customInputs ?? [])].map((_, index) => (
               <div key={index} className="test-case-card">
                 <div
                   className={`test-case-header ${
@@ -338,6 +369,43 @@ const AtCoderProblemApp = () => {
           ref={containerRef}
           dangerouslySetInnerHTML={{ __html: problem.bodyHtml }}
         />
+        <Divider />
+        {customInputs.map((input, index) => (
+          <>
+            <section>
+              <div className="custom-test-case-header">
+                <h3>Input {index + 1}</h3>
+                <Button
+                  appearance="icon"
+                  onClick={() => handleRemoveTestCase(index)}
+                >
+                  <X width={20} height={20} />
+                </Button>
+              </div>
+              <div className="custom-test-case-input">
+                <TextArea
+                  value={input.input}
+                  onChange={(value) => handleInputChange(index, value)}
+                />
+              </div>
+
+              <h3>Output {index + 1}</h3>
+              <div className="custom-test-case-input">
+                <TextArea
+                  value={input.output}
+                  onChange={(value) => handleOutputChange(index, value)}
+                />
+              </div>
+            </section>
+            <Divider />
+          </>
+        ))}
+
+        <section className="test-case-add-section">
+          <div className="test-case-add-button" onClick={handleAddTestCase}>
+            <Plus width={20} height={20} />
+          </div>
+        </section>
       </div>
     </div>
   ) : (

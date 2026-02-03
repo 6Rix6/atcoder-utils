@@ -20,6 +20,7 @@ const TextAreaElm = styled.div`
   font-size: var(--vscode-font-size);
   display: inline-block;
   min-width: 100px;
+  width: 100%;
 `;
 
 const LabelElm = styled(Label)`

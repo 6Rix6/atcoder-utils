@@ -4,6 +4,7 @@ import {
   getTaskFromUrlOrId,
   requestContestTasks,
   requestTask,
+  SampleInput,
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
 import { runAndWait } from "../lib/paizaApi";
@@ -164,7 +165,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
         break;
 
       case "runAll":
-        await this._runAllTestCases(message.language);
+        await this._runAllTestCases(message.language, message.customInputs);
         break;
     }
   }
@@ -172,9 +173,13 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
   /**
    * Run all test cases from problem samples in parallel
    */
-  private async _runAllTestCases(language: string) {
+  private async _runAllTestCases(
+    language: string,
+    customInputs?: SampleInput[],
+  ) {
     const problem = this._problem;
-    if (!problem.samples || problem.samples.length === 0) {
+    const samples = [...problem.samples, ...(customInputs ?? [])];
+    if (!samples || samples.length === 0) {
       this._postMessage({
         command: "error",
         error: "No test cases available",
@@ -192,7 +197,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
 
     try {
       // Create promises for all test cases
-      const promises = problem.samples.map(async (sample, index) => {
+      const promises = samples.map(async (sample, index) => {
         // Notify that this test case is running
         this._postMessage({
           command: "testCaseStatus",

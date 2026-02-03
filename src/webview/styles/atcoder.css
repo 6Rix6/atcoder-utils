@@ -475,3 +475,32 @@ hr {
 .test-case-result pre::-webkit-scrollbar-thumb:hover {
   background-color: var(--vscode-scrollbarSlider-activeBackground);
 }
+
+.test-case-add-button {
+  @apply cursor-pointer w-full rounded-xs flex items-center justify-center;
+  background-color: var(--vscode-sideBar-background);
+  border: 1px solid var(--vscode-panel-border);
+  padding: 0.5rem 1rem;
+}
+
+.test-case-add-button:hover {
+  background-color: var(--vscode-list-hoverBackground);
+  border-color: var(--vscode-focusBorder);
+}
+
+.custom-test-case-header {
+  @apply flex justify-between;
+}
+
+.custom-test-case-header button {
+  @apply aspect-square w-6 h-6 p-1;
+}
+
+.custom-test-case-input {
+  @apply w-full;
+}
+
+.custom-test-case-input textarea {
+  @apply w-full;
+  border: 1px solid var(--vscode-panel-border);
+}
