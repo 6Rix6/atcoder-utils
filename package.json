@@ -2,7 +2,7 @@
   "name": "atcoder-utils",
   "displayName": "AtCoder Utils",
   "description": "Helpful utilities for competitive programming on AtCoder",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "6Rix6",
   "icon": "media/logo.png",
   "repository": {
