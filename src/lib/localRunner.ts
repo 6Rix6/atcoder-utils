@@ -326,7 +326,10 @@ export async function localRunAndWait(
       }
 
       // Brief delay to ensure the compiled binary is fully flushed to disk
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      const delayMs = getSettingValue<number>(SETTINGS.compileDelayMs) ?? 100;
+      if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
     }
 
     // Determine run command: custom > built-in

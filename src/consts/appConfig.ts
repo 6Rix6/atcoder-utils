@@ -17,4 +17,5 @@ export const SETTINGS = {
   atCoderLanguage: "atCoderLanguage",
   executionMode: "executionMode",
   localCustomCommands: "localCustomCommands",
+  compileDelayMs: "compileDelayMs",
 };

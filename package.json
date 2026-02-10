@@ -106,6 +106,12 @@
               }
             }
           }
+        },
+        "atcoder-utils.compileDelayMs": {
+          "type": "number",
+          "default": 100,
+          "minimum": 0,
+          "description": "Delay in milliseconds between compilation and execution (local mode only)"
         }
       }
     },
