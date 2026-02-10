@@ -7,7 +7,8 @@ import * as cp from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import type { DetailsResponse } from "./paizaApi";
+
+import type { DetailsResponse } from "../types/Responses";
 import { getSettingValue } from "../utils/getSettingValue";
 import { SETTINGS } from "../consts/appConfig";
 

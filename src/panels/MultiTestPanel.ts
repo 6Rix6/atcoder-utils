@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { type DetailsResponse } from "../lib/paizaApi";
 import { requestTask } from "../lib/scrapeAtCoder";
 import { BasePanel, PanelConfig } from "./BasePanel";
 import { Verdict } from "../types/TestCaseResult";

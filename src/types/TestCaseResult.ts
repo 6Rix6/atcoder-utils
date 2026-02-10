@@ -1,4 +1,4 @@
-import type { DetailsResponse } from "../lib/paizaApi";
+import type { DetailsResponse } from "./Responses";
 
 /**
  * Test case result for parallel execution

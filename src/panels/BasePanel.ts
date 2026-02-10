@@ -1,10 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import {
-  detectLanguage,
-  runAndWait,
-  type DetailsResponse,
-} from "../lib/paizaApi";
+import { detectLanguage, runAndWait } from "../lib/paizaApi";
+import type { DetailsResponse } from "../types/Responses";
 import { localRunAndWait } from "../lib/localRunner";
 import { getWebviewContent } from "../utils/utils";
 import { getSettingValue } from "../utils/getSettingValue";

@@ -1,10 +1,11 @@
 import "../styles/index.css";
 import React, { useState, useEffect } from "react";
-import { DetailsResponse, SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
+import { DetailsResponse } from "../../types/Responses";
 import { Button, Dropdown, DropdownOption } from "../components";
 import type { OpenEditor } from "../../types/OpenEditor";
 import { formatBytes } from "../utils/formatUtils";
 import { getVscode } from "../utils/getVscode";
+import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 
 const vscode = getVscode();
 
