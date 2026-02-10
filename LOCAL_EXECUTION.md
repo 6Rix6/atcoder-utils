@@ -10,6 +10,17 @@
 
 VS Code の設定メニューから 拡張機能 > AtCoder Utils > **Execution Mode** を `local` に変更してください。
 
+## エラー
+
+ローカル環境での実行時(特にコンパイルが必要な言語での実行時)に、
+
+```
+Error: spawn ETXTBSY
+spawn /path/to/executable EACCES
+```
+
+などのエラーが発生する場合は、`atcoder-utils.compileDelayMs`を長めに設定してみてください。
+
 ## 対応言語一覧
 
 | 言語 ID      | 言語名     | コンパイル                                          | 実行                     |

@@ -8,8 +8,6 @@
 
 AtCoder で問題を解く際に便利な機能を提供する拡張機能です。
 
-> AtCoder の表示言語を日本語に設定するには VS Code の設定メニューから 拡張機能 > AtCoder Utils > AtCoder Language で`Japanese`を選択してください。
-
 ## Cookie の設定方法
 
 > [!IMPORTANT]
@@ -47,4 +45,4 @@ VS Code の設定メニューから 拡張機能 > AtCoder Utils > **Execution M
 
 ## ライセンス
 
-MIT
+[MIT](./LICENSE)
