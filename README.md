@@ -19,7 +19,7 @@ AtCoder で問題を解く際に便利な機能を提供する拡張機能です
 
 ## スクリーンショット
 
-![screenshot](./images/atcoder-panel.png)
+![screenshot](./images/screenshot.png)
 
 ## 実行モード
 
