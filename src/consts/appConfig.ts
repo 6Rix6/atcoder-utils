@@ -15,4 +15,6 @@ export const COMMANDS = {
 
 export const SETTINGS = {
   atCoderLanguage: "atCoderLanguage",
+  executionMode: "executionMode",
+  localCustomCommands: "localCustomCommands",
 };

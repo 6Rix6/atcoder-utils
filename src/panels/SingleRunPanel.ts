@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { runAndWait } from "../lib/paizaApi";
 import { BasePanel, PanelConfig } from "./BasePanel";
 
 const PANEL_CONFIG: PanelConfig = {
@@ -82,7 +81,7 @@ export class SingleRunPanel extends BasePanel<SingleRunPanel> {
     this._postMessage({ command: "loading", loading: true });
 
     try {
-      const result = await runAndWait(sourceCode, language, input);
+      const result = await this._executeCode(sourceCode, language, input);
       this._postMessage({
         command: "result",
         result: result,

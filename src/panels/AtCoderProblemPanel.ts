@@ -7,7 +7,6 @@ import {
   SampleInput,
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
-import { runAndWait } from "../lib/paizaApi";
 import { Verdict } from "../types/TestCaseResult";
 
 const PANEL_CONFIG: PanelConfig = {
@@ -206,7 +205,11 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
         });
 
         try {
-          const result = await runAndWait(sourceCode, language, sample.input);
+          const result = await this._executeCode(
+            sourceCode,
+            language,
+            sample.input,
+          );
 
           console.log({ result });
 

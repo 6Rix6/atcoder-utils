@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { runAndWait, DetailsResponse } from "../lib/paizaApi";
+import { type DetailsResponse } from "../lib/paizaApi";
 import { requestTask } from "../lib/scrapeAtCoder";
 import { BasePanel, PanelConfig } from "./BasePanel";
 import { Verdict } from "../types/TestCaseResult";
@@ -101,7 +101,11 @@ export class MultiTestPanel extends BasePanel<MultiTestPanel> {
         });
 
         try {
-          const result = await runAndWait(sourceCode, language, testCase.input);
+          const result = await this._executeCode(
+            sourceCode,
+            language,
+            testCase.input,
+          );
 
           // Check if output matches expected (if provided)
           let verdict: Verdict = null;

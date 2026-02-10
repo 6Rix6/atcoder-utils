@@ -75,6 +75,37 @@
             "English"
           ],
           "description": "The language used to display AtCoder problems"
+        },
+        "atcoder-utils.executionMode": {
+          "type": "string",
+          "default": "paiza",
+          "enum": [
+            "paiza",
+            "local"
+          ],
+          "enumDescriptions": [
+            "Run code using Paiza.io API (requires internet)",
+            "Run code locally (requires compiler/interpreter installed)"
+          ],
+          "description": "Execution mode for running code"
+        },
+        "atcoder-utils.localCustomCommands": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Custom compile/run commands per language for local execution. Use `{source}` for the source file path and `{output}` for the compiled output path.\n\nExample:\n```json\n{\n  \"cpp\": { \"compile\": \"g++ -O2 -std=c++17 {source} -o {output}\", \"run\": \"{output}\" },\n  \"python3\": { \"run\": \"python3 {source}\" }\n}\n```",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "compile": {
+                "type": "string",
+                "description": "Compile command. Use {source} and {output} as placeholders."
+              },
+              "run": {
+                "type": "string",
+                "description": "Run command. Use {source} and {output} as placeholders."
+              }
+            }
+          }
         }
       }
     },

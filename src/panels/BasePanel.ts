@@ -1,7 +1,14 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { detectLanguage } from "../lib/paizaApi";
+import {
+  detectLanguage,
+  runAndWait,
+  type DetailsResponse,
+} from "../lib/paizaApi";
+import { localRunAndWait } from "../lib/localRunner";
 import { getWebviewContent } from "../utils/utils";
+import { getSettingValue } from "../utils/getSettingValue";
+import { SETTINGS } from "../consts/appConfig";
 import { OpenEditor } from "../types/OpenEditor";
 
 /**
@@ -186,6 +193,31 @@ export abstract class BasePanel<T extends BasePanel<T>> {
     }
 
     return sourceCode;
+  }
+
+  /**
+   * Execute code using the configured execution mode (paiza or local)
+   */
+  protected async _executeCode(
+    sourceCode: string,
+    language: string,
+    input?: string,
+  ): Promise<DetailsResponse> {
+    const mode = getSettingValue<string>(SETTINGS.executionMode) ?? "paiza";
+    if (mode === "local") {
+      // Build variables for placeholder substitution in custom commands
+      const variables: Record<string, string> = {};
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (workspaceFolder) {
+        variables.workspace = workspaceFolder.uri.fsPath;
+      }
+      if (this._targetDocument) {
+        variables.fileDir = path.dirname(this._targetDocument.fileName);
+        variables.file = this._targetDocument.fileName;
+      }
+      return localRunAndWait(sourceCode, language, input, undefined, variables);
+    }
+    return runAndWait(sourceCode, language, input);
   }
 
   /**
