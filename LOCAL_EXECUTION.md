@@ -66,11 +66,40 @@ spawn /path/to/executable EACCES
 ```json
 "atcoder-utils.localCustomCommands": {
   "cpp": {
-    "compile": "make -C {workspace}",
+    "compile": "make SRCS={file} -C {workspace}",
     "run": "{workspace}/a.out"
   }
 }
 ```
+
+<details>
+<summary>makefileの例</summary>
+
+```makefile
+CC      = g++
+CFLAGS  =
+TARGET  = a.out
+SRCS   ?= main.cpp
+OBJS    = $(SRCS:.cpp=.o)
+INCDIR  = -I .
+LIBDIR  =
+LIBS    =
+
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^ $(LIBDIR) $(LIBS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
+
+all: clean $(TARGET)
+
+clean:
+	-rm -f *.o $(TARGET) *.d
+
+.PHONY: all clean
+```
+
+</details>
 
 #### C++ で最適化オプションを追加
 
