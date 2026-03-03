@@ -14,8 +14,8 @@ import {
   Check2,
   Circle,
   Plus,
-  Trash,
   X,
+  Copy,
 } from "../components/icons";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { TestCaseResult } from "../../types/TestCaseResult";
@@ -36,6 +36,7 @@ const AtCoderProblemApp = () => {
   const [error, setError] = useState<string | null>(null);
   const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
   const [customInputs, setCustomInputs] = useState<SampleInput[]>([]);
+  const [isCopying, setIsCopying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -161,6 +162,16 @@ const AtCoderProblemApp = () => {
         command: "openLink",
         url: problem.url,
       });
+    }
+  };
+
+  const handleCopyMd = () => {
+    if (vscode && !isCopying) {
+      vscode.postMessage({
+        command: "copyMd",
+      });
+      setIsCopying(true);
+      setTimeout(() => setIsCopying(false), 2000);
     }
   };
 
@@ -365,10 +376,23 @@ const AtCoderProblemApp = () => {
         )}
 
         <Divider />
-        <div
-          ref={containerRef}
-          dangerouslySetInnerHTML={{ __html: problem.bodyHtml }}
-        />
+        <div className="problem-body-container">
+          <div
+            ref={containerRef}
+            dangerouslySetInnerHTML={{ __html: problem.bodyHtml }}
+          />
+          <Button
+            appearance="icon"
+            onClick={handleCopyMd}
+            className="icon-button problem-copy-button"
+          >
+            {isCopying ? (
+              <Check2 width={12} height={12} />
+            ) : (
+              <Copy width={12} height={12} />
+            )}
+          </Button>
+        </div>
         <Divider />
         {customInputs.map((input, index) => (
           <>
@@ -378,6 +402,7 @@ const AtCoderProblemApp = () => {
                 <Button
                   appearance="icon"
                   onClick={() => handleRemoveTestCase(index)}
+                  className="icon-button"
                 >
                   <X width={20} height={20} />
                 </Button>

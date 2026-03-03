@@ -122,7 +122,6 @@ hr {
   background-color: var(--vscode-list-activeSelectionBackground);
 }
 
-/* Chevron Icon */
 .chevron-icon {
   color: var(--vscode-foreground);
   transition: transform 0.2s ease;
@@ -457,10 +456,14 @@ hr {
   display: block;
 }
 
-/* Scrollbar Styling (VSCode-like) */
-.test-case-result pre::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+.problem-body-container {
+  position: relative;
+}
+
+.problem-copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .test-case-result pre::-webkit-scrollbar-track {
@@ -492,8 +495,8 @@ hr {
   @apply flex justify-between;
 }
 
-.custom-test-case-header button {
-  @apply aspect-square w-6 h-6 p-1;
+.icon-button {
+  @apply aspect-square w-6 h-6 p-1 flex items-center justify-center;
 }
 
 .custom-test-case-input {

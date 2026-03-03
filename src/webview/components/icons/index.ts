@@ -8,4 +8,5 @@ export * from "./Circle";
 export * from "./Pause";
 export * from "./ArrowClockwise";
 export * from "./Trash";
+export * from "./Copy";
 export * from "./X";

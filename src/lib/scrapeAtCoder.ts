@@ -164,7 +164,6 @@ const scrapeTask = async (url: string): Promise<AtCoderProblem | null> => {
     const targetUrl = updateLangParam(url, langCode);
 
     const html = await fetchHTML(targetUrl);
-    console.log({ html });
     const $ = cheerio.load(html);
 
     const id = url.split("/").pop()?.split("?").shift() ?? "";
