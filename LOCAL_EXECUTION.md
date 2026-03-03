@@ -51,13 +51,16 @@ spawn /path/to/executable EACCES
 
 ### 使用可能なプレースホルダー
 
-| プレースホルダー | 説明                         |
-| ---------------- | ---------------------------- |
-| `{source}`       | 一時ソースファイルのパス     |
-| `{output}`       | コンパイル出力ファイルのパス |
-| `{workspace}`    | ワークスペースフォルダのパス |
-| `{fileDir}`      | 対象ファイルのディレクトリ   |
-| `{file}`         | 対象ファイルのフルパス       |
+| プレースホルダー            | 説明                                 |
+| --------------------------- | ------------------------------------ |
+| `{source}`                  | 一時ソースファイルのパス             |
+| `{output}`                  | コンパイル出力ファイルのパス         |
+| `{workspace}`               | ワークスペースフォルダのパス         |
+| `{fileDir}`                 | 対象ファイルのディレクトリ           |
+| `{file}`                    | 対象ファイルのフルパス               |
+| `{fileBasename}`            | 対象ファイルのベース名               |
+| `{fileBasenameNoExtension}` | 対象ファイルのベース名（拡張子なし） |
+| `{fileExtname}`             | 対象ファイルの拡張子                 |
 
 ### 設定例
 
@@ -67,7 +70,7 @@ spawn /path/to/executable EACCES
 "atcoder-utils.localCustomCommands": {
   "cpp": {
     "compile": "make SRCS={file} -C {workspace}",
-    "run": "{workspace}/a.out"
+    "run": "{workspace}/{fileBasenameNoExtension}.out"
   }
 }
 ```
@@ -78,8 +81,8 @@ spawn /path/to/executable EACCES
 ```makefile
 CC      = g++
 CFLAGS  =
-TARGET  = a.out
 SRCS   ?= main.cpp
+TARGET  = $(SRCS:.cpp=.out)
 OBJS    = $(SRCS:.cpp=.o)
 INCDIR  = -I .
 LIBDIR  =
