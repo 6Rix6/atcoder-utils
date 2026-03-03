@@ -209,8 +209,14 @@ export abstract class BasePanel<T extends BasePanel<T>> {
         variables.workspace = workspaceFolder.uri.fsPath;
       }
       if (this._targetDocument) {
-        variables.fileDir = path.dirname(this._targetDocument.fileName);
-        variables.file = this._targetDocument.fileName;
+        const filePath = this._targetDocument.fileName;
+        const parsedPath = path.parse(filePath);
+
+        variables.fileDir = parsedPath.dir;
+        variables.file = filePath;
+        variables.fileBasename = parsedPath.base;
+        variables.fileBasenameNoExtension = parsedPath.name;
+        variables.fileExtname = parsedPath.ext;
       }
       return localRunAndWait(sourceCode, language, input, undefined, variables);
     }
