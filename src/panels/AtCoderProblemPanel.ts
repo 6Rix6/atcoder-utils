@@ -171,7 +171,10 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
 
       case "copyMd":
         const md = htmlToMarkdown(this._problem.bodyHtml);
-        vscode.env.clipboard.writeText(md);
+        const titleMd = `## ${this._problem.title}`;
+        const constrains = this._problem.executeConstraints;
+
+        vscode.env.clipboard.writeText(`${titleMd}\n${constrains}  \n${md}`);
         break;
     }
   }
