@@ -44,15 +44,6 @@ const InputElm = styled.textarea`
   height: 100%;
   resize: none;
 
-  &:hover,
-  &:focus-visible,
-  &:disabled,
-  &:active,
-  &:focus {
-    outline: none;
-    box-shadow: none;
-  }
-
   &:not([disabled]):hover {
     background: var(--vscode-input-background);
     border-color: var(--vscode-dropdown-border);

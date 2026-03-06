@@ -328,11 +328,7 @@ const MultiTestApp = () => {
         ))}
       </div>
 
-      <Button
-        disabled={isLoading}
-        onClick={handleRunAll}
-        className="run-all-btn"
-      >
+      <Button disabled={isLoading} onClick={handleRunAll}>
         {isLoading ? "Running..." : `Run All Tests (${testCases.length})`}
       </Button>
 

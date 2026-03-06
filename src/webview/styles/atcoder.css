@@ -42,8 +42,8 @@ ul {
 
 pre {
   @apply w-full my-1 p-2 rounded-xs;
-  background-color: var(--vscode-input-background);
-  border: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-textCodeBlock-background);
+  border: 1px solid var(--vscode-widget-border);
   font-family: "Consolas", "Monaco", monospace;
   overflow-x: auto;
 }
