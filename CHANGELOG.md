@@ -6,6 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### Added
+
+- Problem title and execution constraints are now included when using the "Copy as Markdown" feature.
+- Vscode Elements, codicon.css, codicon.ttf
+
 ## [1.0.2] - 2026-03-03
 
 ### Added
