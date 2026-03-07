@@ -1,12 +1,15 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { detectLanguage, runAndWait } from "../lib/paizaApi";
+
 import type { DetailsResponse } from "../types/Responses";
+import type { ExecutionMode } from "../types/ExecutionMode";
+import type { OpenEditor } from "../types/OpenEditor";
+
+import { detectLanguage, runAndWait } from "../lib/paizaApi";
 import { localRunAndWait } from "../lib/localRunner";
 import { getWebviewContent } from "../utils/utils";
 import { getSettingValue } from "../utils/getSettingValue";
 import { SETTINGS } from "../consts/appConfig";
-import { OpenEditor } from "../types/OpenEditor";
 
 /**
  * Configuration for creating a panel
@@ -199,8 +202,10 @@ export abstract class BasePanel<T extends BasePanel<T>> {
     sourceCode: string,
     language: string,
     input?: string,
+    execution?: ExecutionMode,
   ): Promise<DetailsResponse> {
-    const mode = getSettingValue<string>(SETTINGS.executionMode) ?? "paiza";
+    const mode =
+      execution ?? getSettingValue<string>(SETTINGS.executionMode) ?? "paiza";
     if (mode === "local") {
       // Build variables for placeholder substitution in custom commands
       const variables: Record<string, string> = {};

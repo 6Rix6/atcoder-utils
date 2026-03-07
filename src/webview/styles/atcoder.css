@@ -58,17 +58,25 @@ hr {
 }
 
 .problem-container {
-  @apply flex flex-col p-5;
+  @apply relative p-5;
 }
 
 .problem-header {
-  @apply flex items-center justify-between;
+  @apply flex items-center justify-between mt-5;
+}
+
+.problem-header-buttons {
+  @apply flex gap-2 items-end;
 }
 
 .control-buttons {
-  @apply flex gap-2 items-center top-5 right-5;
+  @apply flex gap-2 items-end top-2 right-5;
   position: fixed;
   z-index: 10;
+
+  & > vscode-single-select {
+    width: 120px;
+  }
 }
 
 /* test case section */
@@ -483,7 +491,8 @@ hr {
   @apply cursor-pointer w-full rounded-xs flex items-center justify-center;
   background-color: var(--vscode-sideBar-background);
   border: 1px solid var(--vscode-panel-border);
-  padding: 0.5rem 1rem;
+  padding: 0.8rem 1rem;
+  transition: border-color 0.2s ease;
 }
 
 .test-case-add-button:hover {
@@ -492,7 +501,7 @@ hr {
 }
 
 .custom-test-case-header {
-  @apply flex justify-between;
+  @apply flex justify-between items-center;
 }
 
 .icon-button {
@@ -501,9 +510,22 @@ hr {
 
 .custom-test-case-input {
   @apply w-full;
+
+  & > vscode-textarea {
+    @apply w-full;
+    font-family: "Consolas", "Monaco", monospace;
+  }
 }
 
-.custom-test-case-input textarea {
-  @apply w-full;
-  border: 1px solid var(--vscode-panel-border);
+.run-button-group {
+  display: inline-block;
+  position: relative;
+}
+
+.more-context-menu {
+  right: 0;
+  top: 100%;
+  position: absolute;
+  width: auto;
+  z-index: 10;
 }

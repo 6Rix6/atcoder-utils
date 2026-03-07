@@ -1,29 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
+import katex from "katex";
+
 import "katex/dist/katex.min.css";
 import "../styles/atcoder.css";
 import "../styles/scrollbar.css";
-import katex from "katex";
+
+import type { TestCaseResult } from "../../types/TestCaseResult";
+import type { ExecutionMode } from "../../types/ExecutionMode";
 
 import { AtCoderProblem, SampleInput } from "../../lib/scrapeAtCoder";
-import { Divider } from "../components/Divider";
-import { Button, Dropdown, DropdownOption } from "../components";
-import {
-  BoxArrowUpRight,
-  Play,
-  ChevronRight,
-  Check2,
-  Circle,
-  Plus,
-  X,
-  Copy,
-} from "../components/icons";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
-import { TestCaseResult } from "../../types/TestCaseResult";
 import { getVscode } from "../utils/getVscode";
 import { formatBytes } from "../utils/formatUtils";
 import { getVerdictClass } from "../utils/getVerdictClass";
 import { getSummary } from "../utils/getSummary";
-import { TextArea } from "../components/TextArea";
+
+import { Check2, Circle } from "../components/icons";
+import {
+  VscodeButton,
+  VscodeButtonGroup,
+  VscodeSingleSelect,
+  VscodeOption,
+  VscodeIcon,
+  VscodeTextarea,
+} from "@vscode-elements/react-elements";
+import { Divider } from "../components/Divider";
+import VscodeContextMenu from "../components/VscodeContextMenu";
 
 const vscode = getVscode();
 
@@ -37,6 +39,7 @@ const AtCoderProblemApp = () => {
   const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
   const [customInputs, setCustomInputs] = useState<SampleInput[]>([]);
   const [isCopying, setIsCopying] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -145,12 +148,13 @@ const AtCoderProblemApp = () => {
     }
   };
 
-  const handleRunAll = () => {
+  const handleRunAll = (execution?: ExecutionMode) => {
     if (vscode) {
       vscode.postMessage({
         command: "runAll",
         language,
         customInputs,
+        execution,
       });
       setExpandedTests(new Set());
     }
@@ -187,6 +191,11 @@ const AtCoderProblemApp = () => {
     });
   };
 
+  const handleChangeLanguage = (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    setLanguage(target.value);
+  };
+
   const handleAddTestCase = () => {
     setCustomInputs((prev) => [...prev, { input: "", output: "" }]);
   };
@@ -195,7 +204,9 @@ const AtCoderProblemApp = () => {
     setCustomInputs((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleInputChange = (index: number, value: string) => {
+  const handleInputChange = (index: number, event: Event) => {
+    const target = event.target as HTMLTextAreaElement;
+    const value = target.value;
     setCustomInputs((prev) => {
       const next = [...prev];
       next[index].input = value;
@@ -203,7 +214,9 @@ const AtCoderProblemApp = () => {
     });
   };
 
-  const handleOutputChange = (index: number, value: string) => {
+  const handleOutputChange = (index: number, event: Event) => {
+    const target = event.target as HTMLTextAreaElement;
+    const value = target.value;
     setCustomInputs((prev) => {
       const next = [...prev];
       next[index].output = value;
@@ -215,32 +228,68 @@ const AtCoderProblemApp = () => {
 
   return problem?.bodyHtml ? (
     <div className="problem-container">
+      <div className="control-buttons">
+        <VscodeSingleSelect value={language} onChange={handleChangeLanguage}>
+          {SUPPORTED_LANGUAGES.map((lang) => (
+            <VscodeOption key={lang.id} value={lang.id}>
+              {lang.label}
+            </VscodeOption>
+          ))}
+        </VscodeSingleSelect>
+
+        <div className="run-button-group">
+          <VscodeButtonGroup>
+            <VscodeButton
+              onClick={() => handleRunAll()}
+              disabled={isLoading}
+              icon="debug-all"
+              title="テストケースをすべて実行"
+            >
+              Run
+            </VscodeButton>
+            <VscodeButton
+              disabled={isLoading}
+              icon="chevron-down"
+              title="その他..."
+              onClick={() => setShowMore(!showMore)}
+            />
+          </VscodeButtonGroup>
+
+          <VscodeContextMenu
+            data={[
+              { label: "Paizaで実行", value: "paiza" },
+              { label: "Localで実行", value: "local" },
+            ]}
+            show={showMore}
+            className="more-context-menu"
+            onVscContextMenuSelect={(e) =>
+              handleRunAll(e.detail.value as ExecutionMode)
+            }
+            onVisibilityChange={(visible) => {
+              setShowMore(visible);
+            }}
+          />
+        </div>
+      </div>
+
       <div className="problem-header">
         <div>
           <h1 className="text-2xl font-bold">{problem.title}</h1>
           <p className="text-primary">{problem.executeConstraints}</p>
         </div>
-        <div className="control-buttons">
-          <Dropdown
-            value={language}
-            className="w-32"
-            onChange={(value) => setLanguage((value as DropdownOption)!.value)}
-            options={SUPPORTED_LANGUAGES.map((lang) => ({
-              value: lang.id,
-              label: lang.label,
-            }))}
+        <div className="problem-header-buttons">
+          <VscodeButton
+            secondary
+            icon={isCopying ? "check" : "copy"}
+            onClick={handleCopyMd}
+            title={isCopying ? "Copied!" : "Markdownでコピー"}
           />
-          <Button onClick={handleRunAll} disabled={isLoading} className="gap-2">
-            <Play />
-            <span className="hidden sm:block">
-              {isLoading
-                ? "Running..."
-                : `Run (${problem.samples?.length || 0})`}
-            </span>
-          </Button>
-          <Button onClick={openLink}>
-            <BoxArrowUpRight />
-          </Button>
+          <VscodeButton
+            secondary
+            icon="link-external"
+            onClick={openLink}
+            title="ブラウザで問題を開く"
+          />
         </div>
       </div>
 
@@ -296,7 +345,8 @@ const AtCoderProblemApp = () => {
                   onClick={() => toggleTestExpanded(index)}
                   style={{ cursor: "pointer" }}
                 >
-                  <ChevronRight
+                  <VscodeIcon
+                    name="chevron-right"
                     className={`chevron-icon ${
                       expandedTests.has(index) ? "expanded" : ""
                     }`}
@@ -381,17 +431,6 @@ const AtCoderProblemApp = () => {
             ref={containerRef}
             dangerouslySetInnerHTML={{ __html: problem.bodyHtml }}
           />
-          <Button
-            appearance="icon"
-            onClick={handleCopyMd}
-            className="icon-button problem-copy-button"
-          >
-            {isCopying ? (
-              <Check2 width={12} height={12} />
-            ) : (
-              <Copy width={12} height={12} />
-            )}
-          </Button>
         </div>
         <Divider />
         {customInputs.map((input, index) => (
@@ -399,26 +438,25 @@ const AtCoderProblemApp = () => {
             <section>
               <div className="custom-test-case-header">
                 <h3>Input {index + 1}</h3>
-                <Button
-                  appearance="icon"
+                <VscodeIcon
+                  name="close"
+                  title="削除"
+                  actionIcon
                   onClick={() => handleRemoveTestCase(index)}
-                  className="icon-button"
-                >
-                  <X width={20} height={20} />
-                </Button>
+                />
               </div>
               <div className="custom-test-case-input">
-                <TextArea
+                <VscodeTextarea
                   value={input.input}
-                  onChange={(value) => handleInputChange(index, value)}
+                  onChange={(e) => handleInputChange(index, e)}
                 />
               </div>
 
               <h3>Output {index + 1}</h3>
               <div className="custom-test-case-input">
-                <TextArea
+                <VscodeTextarea
                   value={input.output}
-                  onChange={(value) => handleOutputChange(index, value)}
+                  onChange={(e) => handleOutputChange(index, e)}
                 />
               </div>
             </section>
@@ -428,7 +466,7 @@ const AtCoderProblemApp = () => {
 
         <section className="test-case-add-section">
           <div className="test-case-add-button" onClick={handleAddTestCase}>
-            <Plus width={20} height={20} />
+            <VscodeIcon name="add" size={12}></VscodeIcon>
           </div>
         </section>
       </div>

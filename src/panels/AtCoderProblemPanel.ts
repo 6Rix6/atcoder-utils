@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
 
+import type { Verdict } from "../types/TestCaseResult";
+import type { ExecutionMode } from "../types/ExecutionMode";
+
 import { BasePanel, PanelConfig } from "./BasePanel";
 import {
   getTaskFromUrlOrId,
@@ -8,7 +11,6 @@ import {
   SampleInput,
 } from "../lib/scrapeAtCoder";
 import { AtCoderProblem } from "../lib/scrapeAtCoder";
-import { Verdict } from "../types/TestCaseResult";
 import { htmlToMarkdown } from "../utils/htmlToMarkdown";
 
 const PANEL_CONFIG: PanelConfig = {
@@ -166,7 +168,11 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
         break;
 
       case "runAll":
-        await this._runAllTestCases(message.language, message.customInputs);
+        await this._runAllTestCases(
+          message.language,
+          message.customInputs,
+          message.execution,
+        );
         break;
 
       case "copyMd":
@@ -185,6 +191,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
   private async _runAllTestCases(
     language: string,
     customInputs?: SampleInput[],
+    execution?: ExecutionMode,
   ) {
     const problem = this._problem;
     const samples = [...problem.samples, ...(customInputs ?? [])];
@@ -219,6 +226,7 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
             sourceCode,
             language,
             sample.input,
+            execution,
           );
 
           // Check if output matches expected
