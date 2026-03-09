@@ -95,6 +95,13 @@ const AtCoderProblemApp = () => {
     };
     window.addEventListener("message", handleMessage);
 
+    getProblem();
+    getCurrentLanguage();
+
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
     const handleCopySelection = (e: ClipboardEvent) => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) return;
@@ -128,13 +135,7 @@ const AtCoderProblemApp = () => {
     };
     window.addEventListener("copy", handleCopySelection);
 
-    getProblem();
-    getCurrentLanguage();
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-      window.removeEventListener("copy", handleCopySelection);
-    };
+    return () => window.removeEventListener("copy", handleCopySelection);
   }, []);
 
   // katex rendering
