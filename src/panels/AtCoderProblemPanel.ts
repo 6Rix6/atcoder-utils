@@ -182,6 +182,13 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
 
         vscode.env.clipboard.writeText(`${titleMd}\n${constrains}  \n${md}`);
         break;
+
+      case "copyMdSelection":
+        const selectedHtml = message.html;
+        const selectedMd = htmlToMarkdown(selectedHtml);
+
+        vscode.env.clipboard.writeText(selectedMd);
+        break;
     }
   }
 

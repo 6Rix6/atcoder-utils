@@ -95,11 +95,45 @@ const AtCoderProblemApp = () => {
     };
     window.addEventListener("message", handleMessage);
 
+    const handleCopySelection = (e: ClipboardEvent) => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      const range = selection.getRangeAt(0);
+      const container = document.createElement("div");
+      container.appendChild(range.cloneContents());
+
+      const varElements = container.querySelectorAll("var.katex-rendered");
+
+      const prefix = !!vscode ? "" : "$";
+      varElements.forEach((el) => {
+        const tex = el.getAttribute("data-tex");
+        if (tex) {
+          el.textContent = prefix + tex + prefix;
+        }
+      });
+
+      console.log(container.innerHTML);
+
+      if (vscode) {
+        e.preventDefault();
+        vscode.postMessage({
+          command: "copyMdSelection",
+          html: container.innerHTML,
+        });
+      } else {
+        e.clipboardData?.setData("text/plain", container.innerText);
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("copy", handleCopySelection);
+
     getProblem();
     getCurrentLanguage();
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      window.removeEventListener("copy", handleCopySelection);
     };
   }, []);
 
@@ -118,6 +152,7 @@ const AtCoderProblemApp = () => {
             displayMode: false,
           });
           element.classList.add("katex-rendered");
+          element.setAttribute("data-tex", tex);
         } catch (e) {
           console.error(e);
         }
