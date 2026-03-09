@@ -18,4 +18,5 @@ export const SETTINGS = {
   executionMode: "executionMode",
   localCustomCommands: "localCustomCommands",
   compileDelayMs: "compileDelayMs",
+  texDelimiterMd: "texDelimiterMd",
 };

@@ -112,15 +112,12 @@ const AtCoderProblemApp = () => {
 
       const varElements = container.querySelectorAll("var.katex-rendered");
 
-      const prefix = !!vscode ? "" : "$";
       varElements.forEach((el) => {
         const tex = el.getAttribute("data-tex");
         if (tex) {
-          el.textContent = prefix + tex + prefix;
+          el.textContent = tex;
         }
       });
-
-      console.log(container.innerHTML);
 
       if (vscode) {
         e.preventDefault();

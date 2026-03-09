@@ -1,4 +1,8 @@
 import { NodeHtmlMarkdown } from "node-html-markdown";
+import { getSettingValue } from "./getSettingValue";
+import { SETTINGS } from "../consts/appConfig";
+
+const defaultDelimiter = "$";
 
 const nhm = new NodeHtmlMarkdown(
   {
@@ -11,8 +15,8 @@ const nhm = new NodeHtmlMarkdown(
       noEscape: true,
     },
     var: {
-      prefix: "$",
-      postfix: "$",
+      prefix: defaultDelimiter,
+      postfix: defaultDelimiter,
       noEscape: true,
     },
   },
@@ -20,5 +24,11 @@ const nhm = new NodeHtmlMarkdown(
 );
 
 export const htmlToMarkdown = (html: string): string => {
+  const delimiter = getSettingValue<string>(SETTINGS.texDelimiterMd);
+  nhm.translators.set("var", {
+    prefix: delimiter ?? defaultDelimiter,
+    postfix: delimiter ?? defaultDelimiter,
+    noEscape: true,
+  });
   return nhm.translate(html);
 };
