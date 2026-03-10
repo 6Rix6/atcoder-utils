@@ -10,7 +10,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Problem title and execution constraints are now included when using the "Copy as Markdown" feature.
 - Vscode Elements, codicon.css, codicon.ttf
+- Delimiter configuration for copying tex
+
+### Fixed
+
 - UI adjustments
+- Fixed an issue where the problem statement was not displayed correctly.
 
 ## [1.0.2] - 2026-03-03
 

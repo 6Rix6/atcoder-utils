@@ -6,7 +6,6 @@ import type { ExecutionMode } from "../types/ExecutionMode";
 import { BasePanel, PanelConfig } from "./BasePanel";
 import {
   getTaskFromUrlOrId,
-  requestContestTasks,
   requestTask,
   SampleInput,
 } from "../lib/scrapeAtCoder";
@@ -68,39 +67,6 @@ export class AtCoderProblemPanel extends BasePanel<AtCoderProblemPanel> {
     }
 
     this._createOrShowPanel(extensionUri, document, problem, undefined, true);
-  }
-
-  /**
-   * Create multiple panels from AtCoder contest
-   */
-  public static async createFromContest(
-    extensionUri: vscode.Uri,
-    document: vscode.TextDocument,
-  ) {
-    let firstPanelId: string | null = null;
-    await requestContestTasks((index, problem) => {
-      if (!firstPanelId) {
-        firstPanelId = problem.id;
-      }
-      const viewColumn = !index
-        ? vscode.ViewColumn.Beside
-        : vscode.ViewColumn.Active;
-      this._createOrShowPanel(
-        extensionUri,
-        document,
-        problem,
-        viewColumn,
-        !!index,
-      );
-      // if (!!index && firstPanelId) {
-      //   const existingPanel = AtCoderProblemPanel._panels.get(firstPanelId);
-      //   if (existingPanel) {
-      //     existingPanel._panel.reveal(viewColumn ?? vscode.ViewColumn.Beside);
-      //     existingPanel._setTargetDocument(document);
-      //     AtCoderProblemPanel.currentPanel = existingPanel;
-      //   }
-      // }
-    });
   }
 
   private static _createOrShowPanel(
