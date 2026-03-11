@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseComponentProps } from "../types/BaseComponentProps";
+import { BaseComponentProps } from "../../types/BaseComponentProps";
 import styled from "styled-components";
 
 export interface DropdownOption {
@@ -184,7 +184,7 @@ const Dropdown = ({
   ...rest
 }: React.PropsWithChildren<IDropdownProps>) => {
   const [selectedValue, setSelectedValue] = React.useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
   const [isOpen, setIsOpen] = React.useState(open);
@@ -201,7 +201,7 @@ const Dropdown = ({
         setActiveIndex(null);
       }
     },
-    [dropdownRef]
+    [dropdownRef],
   );
 
   const onSelect = React.useCallback(
@@ -218,7 +218,7 @@ const Dropdown = ({
       }
       setIsOpen(false);
     },
-    [selectedValue, onChange, options]
+    [selectedValue, onChange, options],
   );
 
   const onKeyDown = React.useCallback(
@@ -248,12 +248,12 @@ const Dropdown = ({
         onSelect(value);
       }
     },
-    [activeIndex, isOpen, onSelect, options]
+    [activeIndex, isOpen, onSelect, options],
   );
 
   const isDisabled = React.useMemo(
     () => disabled || options.length === 0,
-    [disabled, options]
+    [disabled, options],
   );
 
   const firstOption = React.useMemo(() => {

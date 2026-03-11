@@ -24,8 +24,8 @@ import {
   VscodeIcon,
   VscodeTextarea,
 } from "@vscode-elements/react-elements";
-import { Divider } from "../components/Divider";
-import VscodeContextMenu from "../components/VscodeContextMenu";
+import { Divider } from "../components/elements/Divider";
+import VscodeContextMenu from "../components/elements/VscodeContextMenu";
 
 const vscode = getVscode();
 

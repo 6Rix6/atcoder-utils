@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseComponentProps } from "../types/BaseComponentProps";
+import { BaseComponentProps } from "../../types/BaseComponentProps";
 import styled from "styled-components";
 import { Label } from "./Label";
 

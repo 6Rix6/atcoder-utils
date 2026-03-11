@@ -1,7 +1,7 @@
 import "../styles/index.css";
 import React, { useState, useEffect } from "react";
 import { DetailsResponse } from "../../types/Responses";
-import { Button, Dropdown, DropdownOption } from "../components";
+import { Button, Dropdown, DropdownOption } from "../components/elements";
 import type { OpenEditor } from "../../types/OpenEditor";
 import { formatBytes } from "../utils/formatUtils";
 import { getVscode } from "../utils/getVscode";

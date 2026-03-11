@@ -1,7 +1,7 @@
 import "../styles/index.css";
 import React, { useState, useEffect } from "react";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
-import { Button, Dropdown, DropdownOption } from "../components";
+import { Button, Dropdown, DropdownOption } from "../components/elements";
 import { SampleInput } from "../../lib/scrapeAtCoder";
 import type { TestCaseResult } from "../../types/TestCaseResult";
 import type { OpenEditor } from "../../types/OpenEditor";
