@@ -9,9 +9,20 @@ import {
 import { AtCoderProblemPanel } from "./AtCoderProblemPanel";
 import { APP_CONFIG } from "../consts/appConfig";
 
+export interface PracticeState {
+  practiceStartTime: number | null;
+  isTimerRunning: boolean;
+  pausedAt: number | null;
+}
+
 export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
   private _extensionUri: vscode.Uri;
   private _contest: AtCoderContest | null = null;
+  private _practiceState: PracticeState = {
+    practiceStartTime: null,
+    isTimerRunning: false,
+    pausedAt: null,
+  };
   private _webviewView: vscode.WebviewView | null = null;
   private static _instance: AtCoderContestPanelProvider | null = null;
 
@@ -37,6 +48,7 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
         this._webviewView.webview.postMessage({
           command: "setContest",
           contest: refreshed,
+          practiceState: this._practiceState,
         });
       } catch (error) {
         vscode.window.showErrorMessage(
@@ -69,10 +81,18 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
     try {
       const contest = await requestContest();
       if (contest) {
+        if (this._contest?.url !== contest.url) {
+          this._practiceState = {
+            practiceStartTime: null,
+            isTimerRunning: false,
+            pausedAt: null,
+          };
+        }
         this._contest = contest;
         this._webviewView?.webview.postMessage({
           command: "setContest",
           contest,
+          practiceState: this._practiceState,
         });
       }
     } catch (error) {
@@ -91,8 +111,13 @@ export class AtCoderContestPanelProvider implements vscode.WebviewViewProvider {
           webview.postMessage({
             command: "setContest",
             contest: this._contest,
+            practiceState: this._practiceState,
           });
         }
+        return;
+
+      case "updatePracticeState":
+        this._practiceState = message.practiceState;
         return;
 
       case "openProblem":

@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
-import { Button, Loader } from "../components/elements";
+
 import "../styles/activity-tab.css";
 
-import {
-  BoxArrowUpRight,
-  Play,
-  Pause,
-  ArrowClockwise,
-} from "../components/icons";
+import type { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
+
 import { getVscode } from "../utils/getVscode";
 import {
   formatDate,
@@ -16,14 +11,25 @@ import {
   formatRemainingTime,
 } from "../utils/formatUtils";
 
+import { Loader } from "../components/elements";
+import { VscodeButton, VscodeIcon } from "@vscode-elements/react-elements";
+
 const vscode = getVscode();
 
 type ContestStatus = "before" | "ongoing" | "ended" | "practice";
+
+export interface PracticeState {
+  practiceStartTime: number | null;
+  isTimerRunning: boolean;
+  pausedAt: number | null;
+}
 
 interface ContestTimerProps {
   beginAt: Date;
   endAt: Date;
   durationMinutes: number;
+  practiceState: PracticeState;
+  onUpdatePracticeState: (state: PracticeState) => void;
 }
 
 interface ProblemItemProps {
@@ -35,20 +41,10 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
   beginAt,
   endAt,
   durationMinutes,
+  practiceState,
+  onUpdatePracticeState,
 }) => {
   const [now, setNow] = useState(new Date());
-  const [practiceStartTime, setPracticeStartTime] = useState<number | null>(
-    null,
-  );
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [pausedAt, setPausedAt] = useState<number | null>(null);
-
-  // Reset timer when contest changes
-  useEffect(() => {
-    setPracticeStartTime(null);
-    setPausedAt(null);
-    setIsTimerRunning(false);
-  }, [beginAt]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,10 +54,26 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const { practiceStartTime, isTimerRunning, pausedAt } = practiceState;
+
   const beginTime = new Date(beginAt).getTime();
   const endTime = new Date(endAt).getTime();
   const nowTime = now.getTime();
   const practiceDurationMs = durationMinutes * 60 * 1000;
+
+  useEffect(() => {
+    if (practiceStartTime !== null) {
+      const practiceEndTime = practiceStartTime + practiceDurationMs;
+      const effectiveNowTime = pausedAt !== null ? pausedAt : now.getTime();
+      if (effectiveNowTime >= practiceEndTime) {
+        onUpdatePracticeState({
+          practiceStartTime: null,
+          isTimerRunning: false,
+          pausedAt: null,
+        });
+      }
+    }
+  }, [now, practiceStartTime, practiceDurationMs, pausedAt, onUpdatePracticeState]);
 
   let status: ContestStatus;
   let remainingMs: number;
@@ -78,8 +90,6 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
       status = "ended";
       remainingMs = practiceDurationMs;
       label = "残り時間";
-      setPracticeStartTime(null);
-      setPausedAt(null);
     }
   } else if (nowTime < beginTime) {
     status = "before";
@@ -97,26 +107,35 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
 
   const handleStartPractice = () => {
     const currentTime = Date.now();
+    let newStartTime = practiceStartTime;
     if (practiceStartTime === null) {
-      setPracticeStartTime(currentTime);
+      newStartTime = currentTime;
     } else if (pausedAt !== null) {
       const pauseDuration = currentTime - pausedAt;
-      setPracticeStartTime(practiceStartTime + pauseDuration);
+      newStartTime = practiceStartTime + pauseDuration;
     }
-    setPausedAt(null);
+    onUpdatePracticeState({
+      practiceStartTime: newStartTime,
+      isTimerRunning: true,
+      pausedAt: null,
+    });
     setNow(new Date());
-    setIsTimerRunning(true);
   };
 
   const handlePausePractice = () => {
-    setPausedAt(Date.now());
-    setIsTimerRunning(false);
+    onUpdatePracticeState({
+      practiceStartTime,
+      isTimerRunning: false,
+      pausedAt: Date.now(),
+    });
   };
 
   const handleResetPractice = () => {
-    setPracticeStartTime(null);
-    setPausedAt(null);
-    setIsTimerRunning(false);
+    onUpdatePracticeState({
+      practiceStartTime: null,
+      isTimerRunning: false,
+      pausedAt: null,
+    });
   };
 
   return (
@@ -126,27 +145,27 @@ const ContestTimer: React.FC<ContestTimerProps> = ({
         <span className="timer-value">{formatRemainingTime(remainingMs)}</span>
       </div>
       {status === "ended" || status === "practice" ? (
-        <div className="timer-buttons-container">
-          <button
-            className="timer-button timer-reset-button"
+        <div className="flex gap-2">
+          <VscodeButton
+            icon="refresh"
+            title="リセット"
+            secondary
             onClick={handleResetPractice}
-          >
-            <ArrowClockwise />
-          </button>
+          />
           {isTimerRunning ? (
-            <button
-              className="timer-button timer-pause-button"
+            <VscodeButton
+              icon="debug-pause"
+              title="一時停止"
+              secondary
               onClick={handlePausePractice}
-            >
-              <Pause />
-            </button>
+            />
           ) : (
-            <button
-              className="timer-button timer-start-button"
+            <VscodeButton
+              icon="play"
+              title="スタート"
+              secondary
               onClick={handleStartPractice}
-            >
-              <Play />
-            </button>
+            />
           )}
         </div>
       ) : (
@@ -181,7 +200,7 @@ const ProblemItem: React.FC<ProblemItemProps> = ({
         onClick={handleOpenInBrowser}
         role="button"
       >
-        <BoxArrowUpRight />
+        <VscodeIcon name="link-external" title="ブラウザで開く" />
       </div>
     </div>
   );
@@ -189,6 +208,11 @@ const ProblemItem: React.FC<ProblemItemProps> = ({
 
 const AtCoderContestApp = () => {
   const [contest, setContest] = useState<AtCoderContest | null>(null);
+  const [practiceState, setPracticeState] = useState<PracticeState>({
+    practiceStartTime: null,
+    isTimerRunning: false,
+    pausedAt: null,
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -197,6 +221,9 @@ const AtCoderContestApp = () => {
       switch (message.command) {
         case "setContest":
           setContest(message.contest);
+          if (message.practiceState) {
+            setPracticeState(message.practiceState);
+          }
           break;
       }
     };
@@ -209,6 +236,14 @@ const AtCoderContestApp = () => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+
+  const handleUpdatePracticeState = (newState: PracticeState) => {
+    setPracticeState(newState);
+    vscode.postMessage({
+      command: "updatePracticeState",
+      practiceState: newState,
+    });
+  };
 
   const getContest = () => {
     vscode.postMessage({
@@ -238,9 +273,12 @@ const AtCoderContestApp = () => {
       <div className="activity-container">
         <div className="empty-state">
           <p className="empty-state-text">コンテストが選択されていません</p>
-          <Button className="empty-state-button" onClick={handleOpenContest}>
-            <span>コンテストを開く</span>
-          </Button>
+          <VscodeButton
+            className="empty-state-button"
+            onClick={handleOpenContest}
+          >
+            コンテストを開く
+          </VscodeButton>
         </div>
       </div>
     );
@@ -285,6 +323,8 @@ const AtCoderContestApp = () => {
           beginAt={contest.beginAt}
           endAt={contest.endAt}
           durationMinutes={contest.durationMinutes}
+          practiceState={practiceState}
+          onUpdatePracticeState={handleUpdatePracticeState}
         />
       </div>
 
