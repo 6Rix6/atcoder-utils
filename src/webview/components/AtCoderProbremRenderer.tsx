@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
+import "katex/dist/katex.min.css";
+
 import type { WebviewApi } from "vscode-webview";
 import katex from "katex";
 

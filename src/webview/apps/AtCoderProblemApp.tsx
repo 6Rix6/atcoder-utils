@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import type { TestCaseResult } from "../../types/TestCaseResult";
 import type { ExecutionMode } from "../../types/ExecutionMode";
 
-import { AtCoderProblem, SampleInput } from "../../lib/scrapeAtCoder";
 import { SUPPORTED_LANGUAGES } from "../../lib/paizaApi";
 import { getVscode } from "../utils/getVscode";
 import { getSummary } from "../utils/getSummary";
 
+import { useAtCoderProblem } from "../hooks/useAtCoderProblem";
+import { useCopyMd } from "../hooks/useCopyMd";
+import { useCustomInputs } from "../hooks/useCustomInputs";
+
 import {
   VscodeButton,
-  VscodeButtonGroup,
   VscodeSingleSelect,
   VscodeOption,
   VscodeIcon,
@@ -27,90 +28,20 @@ import { TestCaseAddButton } from "../components/TestCaseAddButton";
 const vscode = getVscode();
 
 const AtCoderProblemApp = () => {
-  const [problem, setProblem] = useState<AtCoderProblem | null>(null);
-  const [language, setLanguage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<TestCaseResult[]>([]);
-  const [runningIndices, setRunningIndices] = useState<Set<number>>(new Set());
-  const [error, setError] = useState<string | null>(null);
-  const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
-  const [customInputs, setCustomInputs] = useState<SampleInput[]>([]);
-  const [isCopying, setIsCopying] = useState(false);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      const message = event.data;
-
-      switch (message.command) {
-        case "setProblem":
-          setProblem(message.problem);
-          break;
-
-        case "loading":
-          setIsLoading(message.loading);
-          if (message.loading) {
-            setError(null);
-            setResults([]);
-          }
-          break;
-
-        case "testCaseStatus":
-          setRunningIndices((prev) => {
-            const next = new Set(prev);
-            if (message.status === "running") {
-              next.add(message.index);
-            } else {
-              next.delete(message.index);
-            }
-            return next;
-          });
-          break;
-
-        case "allResults":
-          setResults(message.results);
-          setRunningIndices(new Set());
-          setExpandedTests(
-            new Set(
-              message.results.map((result: TestCaseResult, i: number) =>
-                result.verdict !== "AC" ? i : -1,
-              ),
-            ),
-          );
-          break;
-
-        case "error":
-          setError(message.error);
-          setResults([]);
-          break;
-
-        case "setLanguage":
-          setLanguage(message.language);
-          break;
-      }
-    };
-    window.addEventListener("message", handleMessage);
-
-    getProblem();
-    getCurrentLanguage();
-
-    return () => window.removeEventListener("message", handleMessage);
-  }, []);
-
-  const getProblem = () => {
-    if (vscode) {
-      vscode.postMessage({
-        command: "getProblem",
-      });
-    }
-  };
-
-  const getCurrentLanguage = () => {
-    if (vscode) {
-      vscode.postMessage({
-        command: "getCurrentLanguage",
-      });
-    }
-  };
+  const {
+    problem,
+    language,
+    setLanguage,
+    isLoading,
+    results,
+    runningIndices,
+    error,
+    expandedTests,
+    setExpandedTests,
+  } = useAtCoderProblem(vscode);
+  const { isCopying, handleCopyMd } = useCopyMd(vscode);
+  const { customInputs, handleAdd, handleRemove, handleChange } =
+    useCustomInputs();
 
   const handleRunAll = (execution?: ExecutionMode) => {
     if (vscode) {
@@ -133,16 +64,6 @@ const AtCoderProblemApp = () => {
     }
   };
 
-  const handleCopyMd = () => {
-    if (vscode && !isCopying) {
-      vscode.postMessage({
-        command: "copyMd",
-      });
-      setIsCopying(true);
-      setTimeout(() => setIsCopying(false), 2000);
-    }
-  };
-
   const toggleTestExpanded = (index: number) => {
     setExpandedTests((prev) => {
       const next = new Set(prev);
@@ -158,34 +79,6 @@ const AtCoderProblemApp = () => {
   const handleChangeLanguage = (event: Event) => {
     const target = event.target as HTMLSelectElement;
     setLanguage(target.value);
-  };
-
-  const handleAddTestCase = () => {
-    setCustomInputs((prev) => [...prev, { input: "", output: "" }]);
-  };
-
-  const handleRemoveTestCase = (index: number) => {
-    setCustomInputs((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleInputChange = (index: number, event: Event) => {
-    const target = event.target as HTMLTextAreaElement;
-    const value = target.value;
-    setCustomInputs((prev) => {
-      const next = [...prev];
-      next[index].input = value;
-      return next;
-    });
-  };
-
-  const handleOutputChange = (index: number, event: Event) => {
-    const target = event.target as HTMLTextAreaElement;
-    const value = target.value;
-    setCustomInputs((prev) => {
-      const next = [...prev];
-      next[index].output = value;
-      return next;
-    });
   };
 
   const summary = getSummary(results);
@@ -292,14 +185,14 @@ const AtCoderProblemApp = () => {
                   name="close"
                   title="削除"
                   actionIcon
-                  onClick={() => handleRemoveTestCase(index)}
+                  onClick={() => handleRemove(index)}
                 />
               </div>
               <div className="w-full">
                 <VscodeTextarea
                   className="w-full"
                   value={input.input}
-                  onChange={(e) => handleInputChange(index, e)}
+                  onChange={(e) => handleChange(index, "input", e)}
                 />
               </div>
 
@@ -308,7 +201,7 @@ const AtCoderProblemApp = () => {
                 <VscodeTextarea
                   className="w-full"
                   value={input.output}
-                  onChange={(e) => handleOutputChange(index, e)}
+                  onChange={(e) => handleChange(index, "output", e)}
                 />
               </div>
             </section>
@@ -317,7 +210,7 @@ const AtCoderProblemApp = () => {
         ))}
 
         <section>
-          <TestCaseAddButton onClick={handleAddTestCase} />
+          <TestCaseAddButton onClick={handleAdd} />
         </section>
       </div>
     </div>
