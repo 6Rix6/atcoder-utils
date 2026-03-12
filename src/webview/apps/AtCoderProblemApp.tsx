@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import "katex/dist/katex.min.css";
-
 import type { TestCaseResult } from "../../types/TestCaseResult";
 import type { ExecutionMode } from "../../types/ExecutionMode";
 
