@@ -1,0 +1,121 @@
+.test-case-card {
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.test-case-card:hover {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* Test Case Header */
+.test-case-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--vscode-sideBar-background);
+  user-select: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.test-case-header.expanded {
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.test-case-header:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.test-case-header:active {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+.chevron-icon {
+  color: var(--vscode-foreground);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.test-case-header-text {
+  font-weight: 600;
+  color: var(--vscode-foreground);
+  font-size: 0.875rem;
+}
+
+.test-case-header-number {
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.75rem;
+}
+
+/* Test Case Result (DetailsCard) */
+.test-case-result {
+  padding: 1rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+.result-stats {
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.8125rem;
+  font-family: var(--vscode-editor-font-family);
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+}
+
+.result-output,
+.result-stderr,
+.result-build-error,
+.result-expected-output {
+  margin-top: 0.75rem;
+}
+
+.result-output strong,
+.result-stderr strong,
+.result-build-error strong,
+.result-expected-output strong {
+  display: block;
+  color: var(--vscode-foreground);
+  font-size: 0.8125rem;
+  margin-bottom: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.test-case-error {
+  padding: 0.75rem 1rem;
+  background-color: color-mix(in srgb, currentColor, transparent 70%);
+  color: var(--color-atcoder-wa);
+  font-size: 0.875rem;
+  font-family: var(--vscode-editor-font-family);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AtCoderContest, ProblemLink } from "../../lib/scrapeAtCoder";
 import { Button, Loader } from "../components/elements";
 import "../styles/activity-tab.css";
-import "../styles/scrollbar.css";
+
 import {
   BoxArrowUpRight,
   Play,

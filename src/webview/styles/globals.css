@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* VS Code Theme Variables */
+@theme inline {
+  /* text / foreground */
+  --color-vscode-foreground: var(--vscode-foreground);
+  --color-vscode-description: var(--vscode-descriptionForeground);
+  --color-vscode-link: var(--vscode-textLink-foreground);
+
+  /* background */
+  --color-vscode-editor-bg: var(--vscode-editor-background);
+  --color-vscode-sidebar-bg: var(--vscode-sideBar-background);
+  --color-vscode-blockquote-bg: var(--vscode-textBlockQuote-background);
+  --color-vscode-codeblock-bg: var(--vscode-textCodeBlock-background);
+  --color-vscode-inactive-selection-bg: var(
+    --vscode-editor-inactiveSelectionBackground
+  );
+
+  /* border */
+  --color-vscode-panel-border: var(--vscode-panel-border);
+  --color-vscode-widget-border: var(--vscode-widget-border);
+  --color-vscode-focus-border: var(--vscode-focusBorder);
+  --color-vscode-dropdown-border: var(--vscode-settings-dropdownListBorder);
+
+  /* list */
+  --color-vscode-list-hover: var(--vscode-list-hoverBackground);
+  --color-vscode-list-active: var(--vscode-list-activeSelectionBackground);
+
+  /* button */
+  --color-vscode-btn-secondary-bg: var(--vscode-button-secondaryBackground);
+  --color-vscode-btn-secondary-fg: var(--vscode-button-secondaryForeground);
+
+  /* scrollbar */
+  --color-vscode-scrollbar: var(--vscode-scrollbarSlider-background);
+  --color-vscode-scrollbar-hover: var(--vscode-scrollbarSlider-hoverBackground);
+  --color-vscode-scrollbar-active: var(
+    --vscode-scrollbarSlider-activeBackground
+  );
+
+  /* font */
+  --font-vscode-editor: var(--vscode-editor-font-family);
+}
+
+/* Common / AtCoder Colors */
+@theme inline {
+  --color-atcoder-ac: #4ade80;
+  --color-atcoder-ac-high: #16a34a;
+  --color-atcoder-wa: #f87171;
+  --color-atcoder-re: #fb923c;
+  --color-atcoder-tle: #fb923c;
+  --color-atcoder-ce: #c084fc;
+  --color-error-border: #ef4444;
+}
+
+h3 {
+  @apply text-lg font-bold my-1;
+}
+
+section {
+  @apply my-3;
+  line-height: 1.5;
+}
+
+details {
+  @apply my-1 p-2 rounded-xs;
+  background-color: var(--vscode-textBlockQuote-background);
+
+  summary {
+    @apply cursor-pointer;
+  }
+
+  ::marker {
+    @apply mr-1;
+  }
+}
+
+details[open] {
+  summary {
+    @apply mb-1;
+  }
+}
+
+blockquote {
+  @apply my-1 p-2 rounded-xs;
+}
+
+ul {
+  @apply list-disc list-inside mx-2 my-1;
+}
+
+pre {
+  @apply w-full my-1 p-2 rounded-xs;
+  background-color: var(--vscode-textCodeBlock-background);
+  border: 1px solid var(--vscode-widget-border);
+  font-family: "Consolas", "Monaco", monospace;
+  overflow-x: auto;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--vscode-settings-dropdownListBorder);
+  box-sizing: content-box;
+  height: 0;
+  margin: 4px 0;
+  width: 100%;
+}

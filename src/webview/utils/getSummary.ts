@@ -1,6 +1,7 @@
 import { TestCaseResult } from "../../types/TestCaseResult";
+import { Summary } from "../types/Summary";
 
-export const getSummary = (results: TestCaseResult[]) => {
+export const getSummary = (results: TestCaseResult[]): Summary | null => {
   if (results.length === 0) return null;
   const ac = results.filter((r) => r.verdict === "AC").length;
   const total = results.length;

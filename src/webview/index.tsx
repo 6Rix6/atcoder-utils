@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import React, { lazy, Suspense } from "react";
 import { Loader } from "./components/elements";
+import "./styles/globals.css";
+import "./styles/scrollbar.css";
 
 const App = lazy(() => import("./apps/App"));
 const MultiTestApp = lazy(() => import("./apps/MultiTestApp"));

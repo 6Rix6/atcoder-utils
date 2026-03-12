@@ -1,0 +1,42 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+
+.running {
+  gap: 0.375rem;
+  font-weight: 500;
+  color: var(--vscode-button-secondaryForeground);
+  background-color: var(--vscode-button-secondaryBackground);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.verdict {
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  background-color: color-mix(in srgb, currentColor, transparent 85%);
+  border: 1px solid color-mix(in srgb, currentColor, transparent 70%);
+}
+
+.badge.verdict.verdict-ac {
+  color: var(--color-atcoder-ac);
+}
+
+.badge.verdict.verdict-wa {
+  color: var(--color-atcoder-wa);
+}
+
+.badge.verdict.verdict-re {
+  color: var(--color-atcoder-re);
+}
+
+.badge.verdict.verdict-tle {
+  color: var(--color-atcoder-tle);
+}
+
+.badge.verdict.verdict-ce {
+  color: var(--color-atcoder-ce);
+}

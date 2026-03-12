@@ -6,10 +6,7 @@ interface Props extends React.ComponentProps<typeof VscodeContextMenuElement> {
 }
 
 /// extended vscode-context-menu to support onVisibilityChange
-const VscodeContextMenu: React.FC<Props> = ({
-  onVisibilityChange,
-  ...props
-}) => {
+export const VscodeContextMenu = ({ onVisibilityChange, ...props }: Props) => {
   const elementRef = useRef<any>(null);
 
   useEffect(() => {
@@ -32,5 +29,3 @@ const VscodeContextMenu: React.FC<Props> = ({
 
   return <VscodeContextMenuElement {...props} ref={elementRef} />;
 };
-
-export default VscodeContextMenu;

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+.test-case-add-button {
+  @apply cursor-pointer w-full rounded-xs flex items-center justify-center;
+  background-color: var(--vscode-sideBar-background);
+  border: 1px solid var(--vscode-panel-border);
+  padding: 0.8rem 1rem;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.test-case-add-button:hover {
+  background-color: var(--vscode-list-hoverBackground);
+  border-color: var(--vscode-focusBorder);
+}
